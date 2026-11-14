@@ -21,7 +21,7 @@ Public reading never depends on the database. `/api/health` reports `status` fro
 | `LM_ORIGIN` | WebAuthn RP ID / origin, CSRF origin | e.g. `https://law-machine.onrender.com` |
 | `LM_SOURCE_KEY` | private source envelopes | 32 random bytes, base64 (AES-256-GCM). **Losing it makes stored drafts' sources unreadable.** |
 | `LM_RELEASE_SIGNING_KEY`, `LM_RELEASE_KEY_ID` | signing authored releases | Private P-256 JWK (JSON) whose public key is in `content/trust/release-keys.json` |
-| `LM_VERIFIER_KEY`, `LM_VERIFIER_KEY_ID` | optional signed verification records | HMAC key for `/api/v1/runs/verify` records |
+| `LM_VERIFIER_KEY`, `LM_VERIFIER_KEY_ID` | optional signed verification records | Private P-256 JWK; signs `/api/v1/runs/verify` records (ECDSA) |
 | `LM_BACKUP_KEY` | backup/restore | 32 bytes base64; keep it apart from the database credentials |
 | `LM_AI_ENABLED=1`, `LM_AI_PROVIDER=claude\|heuristic`, `ANTHROPIC_API_KEY` | optional AI candidates | Off by default. Unsetting `LM_AI_ENABLED` is the kill switch. |
 | `LM_WORKER=0` | disable in-process worker | For a separate worker process |
