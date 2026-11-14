@@ -4,6 +4,12 @@ import { pathToFileURL } from 'node:url';
 import { parsePrRegistry } from '../registry/pr-contract.mjs';
 
 export const REPOSITORY = 'neophilism/Law-Machine';
+/**
+ * The repository was transferred to the campaign organization after adoption.
+ * The registry keeps the plan identity that both pinned consumer contracts
+ * import; CI may run from either location. GitHub redirects the old URLs.
+ */
+export const HOSTING_REPOSITORIES = Object.freeze([REPOSITORY, 'Galinsky-2028/Law-Machine']);
 const root = new URL('../', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -54,7 +60,7 @@ export async function validateFiles() {
   if (sha256(original) !== record.textSha256) throw Error('Original source text digest mismatch');
   const docx = await readFile(new URL('docs/source/Law-Machine-Architecture-and-PR-Plan.docx', root));
   if (sha256(docx) !== record.sha256) throw Error('Original DOCX digest mismatch');
-  if (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REPOSITORY !== REPOSITORY) throw Error('Unexpected CI repository identity');
+  if (process.env.GITHUB_REPOSITORY && !HOSTING_REPOSITORIES.includes(process.env.GITHUB_REPOSITORY)) throw Error('Unexpected CI repository identity');
   return validateRegistry(body, JSON.parse(retired), original);
 }
 
