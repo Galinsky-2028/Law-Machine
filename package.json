@@ -9,10 +9,10 @@
     "node": ">=24 <25"
   },
   "scripts": {
-    "check": "node scripts/check.mjs && pnpm boundaries && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm scan:secrets && pnpm smoke:sdk",
+    "check": "node scripts/check.mjs && pnpm boundaries && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm packs:check && pnpm scan:secrets && pnpm smoke:sdk",
     "check:foundation": "node scripts/check.mjs",
-    "dev": "pnpm --filter @law-machine/web dev",
-    "build": "pnpm --filter @law-machine/web build",
+    "dev": "pnpm packs:public && pnpm --filter @law-machine/web dev",
+    "build": "pnpm packs:public && pnpm --filter @law-machine/web build",
     "start": "pnpm --filter @law-machine/web start",
     "lint": "eslint apps packages tests/unit",
     "typecheck": "tsc --noEmit",
@@ -24,7 +24,11 @@
     "audit": "pnpm audit --audit-level=high",
     "validate:registry": "node scripts/validate-pr-registry.mjs",
     "validate:security": "python3 scripts/validate_e2eesa_status.py",
-    "smoke:sdk": "node --import tsx scripts/sdk-smoke.ts"
+    "smoke:sdk": "node --import tsx scripts/packs.ts public >/dev/null && node --import tsx scripts/sdk-smoke.ts",
+    "packs:check": "node --import tsx scripts/packs.ts check",
+    "packs:build": "node --import tsx scripts/packs.ts build",
+    "packs:sign": "node --import tsx scripts/packs.ts sign",
+    "packs:public": "node --import tsx scripts/packs.ts public"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",

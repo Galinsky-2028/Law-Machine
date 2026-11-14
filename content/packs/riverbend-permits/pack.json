@@ -1,0 +1,1851 @@
+{
+ "format": "law-machine-pack-v1",
+ "packId": "riverbend-permits",
+ "title": "Food truck permits (fictional)",
+ "question": "How does a permit application move through a town office?",
+ "summary": "An invented town ordinance for mobile food vehicles and an invented amendment. Follow an application through eligibility, exceptions, deadlines and fees.",
+ "domain": "permits",
+ "fictional": true,
+ "disclaimers": [
+  "Riverbend is fictional. Its ordinance and draft amendment were written for this demonstration and are not real law.",
+  "Nothing here is legal advice or describes a real permit process."
+ ],
+ "releaseLabel": "2026.11.0",
+ "releasedAt": "2026-11-14",
+ "sources": [
+  {
+   "id": "ordinance-current",
+   "title": "Riverbend Mobile Food Vending Ordinance (fictional)",
+   "kind": "fictional",
+   "file": "sources/ordinance-current.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  },
+  {
+   "id": "ordinance-draft",
+   "title": "Riverbend ordinance as amended by Draft Amendment 2 (fictional)",
+   "kind": "fictional",
+   "file": "sources/ordinance-amended-draft.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  }
+ ],
+ "actors": [
+  {
+   "id": "applicant",
+   "name": "Applicant",
+   "kind": "person",
+   "description": "A hypothetical food truck operator."
+  },
+  {
+   "id": "licensing-office",
+   "name": "Licensing Office",
+   "kind": "agency",
+   "description": "The fictional town office that decides permits.",
+   "group": "town"
+  },
+  {
+   "id": "town",
+   "name": "Town of Riverbend",
+   "kind": "organization",
+   "description": "Receives permit fees.",
+   "group": "town"
+  },
+  {
+   "id": "town-council",
+   "name": "Town Council",
+   "kind": "organization",
+   "description": "Hears appeals of denials.",
+   "group": "town"
+  }
+ ],
+ "facts": [
+  {
+   "id": "applicationComplete",
+   "type": "boolean",
+   "label": "The application is complete",
+   "description": "All required parts were filed."
+  },
+  {
+   "id": "hasInsurance",
+   "type": "boolean",
+   "label": "Holds liability insurance",
+   "description": "The applicant holds liability insurance."
+  },
+  {
+   "id": "passedInspection",
+   "type": "boolean",
+   "label": "Passed the fire safety inspection",
+   "description": "The applicant passed the inspection."
+  },
+  {
+   "id": "pendingInspection",
+   "type": "boolean",
+   "label": "Inspection requested, not yet performed",
+   "description": "An inspection was requested and is still pending."
+  },
+  {
+   "id": "isNonprofit",
+   "type": "boolean",
+   "label": "Applicant is a nonprofit",
+   "description": "The applicant is a nonprofit organization."
+  },
+  {
+   "id": "deemedGranted",
+   "type": "boolean",
+   "label": "Deemed granted",
+   "description": "Set by the model when the draft's deemed-grant rule applies."
+  },
+  {
+   "id": "applicantFunds",
+   "type": "number",
+   "label": "Applicant funds",
+   "description": "Hypothetical applicant money, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "townRevenue",
+   "type": "number",
+   "label": "Town permit revenue",
+   "description": "Fees received by the Town, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "permitFee",
+   "type": "number",
+   "label": "Permit fee",
+   "description": "The fee stated in section 3(a).",
+   "unit": "USD"
+  }
+ ],
+ "calendars": [
+  {
+   "id": "riverbend-civil",
+   "version": "2027.1",
+   "timeZone": "UTC",
+   "weekendDays": [
+    0,
+    6
+   ],
+   "observedHolidays": [
+    "2027-04-16",
+    "2027-07-05",
+    "2027-11-25"
+   ],
+   "basis": "Assumption for this fictional town: business days are Monday to Friday excluding invented holidays (Founders Day is 16 April)."
+  }
+ ],
+ "deadlines": [
+  {
+   "id": "cur-20bd",
+   "label": "20 business days after filing",
+   "calendarId": "riverbend-civil",
+   "amount": 20,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "1(b)",
+     "quote": "within 20 business days after it is filed",
+     "source": "ordinance-current"
+    }
+   ]
+  },
+  {
+   "id": "dft-10bd",
+   "label": "10 business days after filing",
+   "calendarId": "riverbend-civil",
+   "amount": 10,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "1(b)",
+     "quote": "within 10 business days after it is filed",
+     "source": "ordinance-draft"
+    }
+   ]
+  },
+  {
+   "id": "cur-30-days",
+   "label": "30 days after denial",
+   "calendarId": "riverbend-civil",
+   "amount": 30,
+   "unit": "calendar-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "keep",
+   "sourceRefs": [
+    {
+     "provision": "4(a)",
+     "quote": "within 30 days after the denial",
+     "source": "ordinance-current"
+    }
+   ],
+   "interpretationId": "appeal-days-calendar"
+  },
+  {
+   "id": "dft-30-days",
+   "label": "30 days after denial",
+   "calendarId": "riverbend-civil",
+   "amount": 30,
+   "unit": "calendar-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "keep",
+   "sourceRefs": [
+    {
+     "provision": "4(a)",
+     "quote": "within 30 days after the denial",
+     "source": "ordinance-draft"
+    }
+   ],
+   "interpretationId": "appeal-days-calendar"
+  }
+ ],
+ "frameworks": [
+  {
+   "id": "baseline",
+   "label": "Current ordinance (fictional)",
+   "role": "baseline",
+   "billId": "riverbend-food-ordinance",
+   "version": "2027",
+   "versionId": "riverbend-ordinance-2027",
+   "status": "enacted",
+   "jurisdiction": "riverbend",
+   "agency": "licensing-office",
+   "asOf": "2027-01-01",
+   "sourceId": "ordinance-current",
+   "rules": [
+    {
+     "id": "cur-decide",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "1(b)",
+       "quote": "shall decide a complete application within 20 business days after it is filed"
+      }
+     ],
+     "trigger": "application-filed",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "applicationComplete"
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "licensing-office",
+     "explanationKey": "decide",
+     "effect": {
+      "action": "decide-application",
+      "deadlineId": "cur-20bd",
+      "onPerformEmits": "application-decided",
+      "checkpoint": "decision",
+      "summary": "The Licensing Office must decide a complete application within 20 business days.",
+      "kind": "create-obligation"
+     }
+    },
+    {
+     "id": "cur-grant",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(a)",
+       "quote": "shall grant a permit to an applicant who holds liability insurance and has passed a fire safety inspection"
+      }
+     ],
+     "trigger": "application-decided",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "hasInsurance"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "passedInspection"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "grant",
+     "effect": {
+      "emits": "permit-granted",
+      "checkpoint": "outcome",
+      "status": {
+       "force": "permission",
+       "holderId": "applicant",
+       "action": "operate-food-vehicle"
+      },
+      "summary": "An insured, inspected applicant receives a permit.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "cur-deny",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(b)",
+       "quote": "shall deny a permit to an applicant who does not meet subsection (a)"
+      }
+     ],
+     "trigger": "application-decided",
+     "when": {
+      "op": "not",
+      "arg": {
+       "op": "and",
+       "terms": [
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "hasInsurance"
+         }
+        },
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "passedInspection"
+         }
+        }
+       ]
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "deny",
+     "effect": {
+      "emits": "permit-denied",
+      "checkpoint": "outcome",
+      "summary": "An applicant who does not meet the requirements is denied.",
+      "kind": "record"
+     },
+     "after": [
+      "cur-grant"
+     ]
+    },
+    {
+     "id": "cur-fee-duty",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "A permit holder shall pay a permit fee of 250 dollars to the Town."
+      }
+     ],
+     "trigger": "permit-granted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "applicant",
+     "explanationKey": "fee-duty",
+     "effect": {
+      "action": "pay-fee",
+      "deadlineId": null,
+      "onPerformEmits": "fee-paid",
+      "checkpoint": "fee",
+      "summary": "The permit holder must pay the 250-dollar fee. No deadline is stated.",
+      "kind": "create-obligation"
+     }
+    },
+    {
+     "id": "cur-appeal-window",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "4(a)",
+       "quote": "may appeal to the Town Council within 30 days after the denial"
+      }
+     ],
+     "trigger": "permit-denied",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "schedule",
+     "actorId": "applicant",
+     "explanationKey": "appeal-window",
+     "effect": {
+      "deadlineId": "cur-30-days",
+      "emits": "appeal-window-closed",
+      "checkpoint": "appeal-window",
+      "summary": "A denied applicant has 30 days to appeal to the Town Council.",
+      "kind": "schedule"
+     }
+    },
+    {
+     "id": "cur-fee-payment",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "shall pay a permit fee of 250 dollars to the Town"
+      }
+     ],
+     "trigger": "fee-paid",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "applicant",
+     "explanationKey": "fee-payment",
+     "effect": {
+      "checkpoint": "fee-payment",
+      "transfer": {
+       "account": "applicantFunds",
+       "to": "townRevenue",
+       "amountFact": "permitFee"
+      },
+      "summary": "The fee moves from the applicant to the Town.",
+      "kind": "record"
+     }
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-riverbend-mobile-food-vending-ordinance-fictional",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(a)",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "3(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "4(a)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "id": "proposal",
+   "label": "Draft Amendment 2 (fictional)",
+   "role": "proposal",
+   "billId": "riverbend-amendment-2",
+   "version": "Draft 2",
+   "versionId": "riverbend-amendment-2-draft",
+   "status": "draft",
+   "jurisdiction": "riverbend",
+   "agency": "licensing-office",
+   "asOf": "2027-01-01",
+   "sourceId": "ordinance-draft",
+   "rules": [
+    {
+     "id": "dft-decide",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "1(b)",
+       "quote": "shall decide a complete application within 10 business days after it is filed"
+      }
+     ],
+     "trigger": "application-filed",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "applicationComplete"
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "licensing-office",
+     "explanationKey": "decide-draft",
+     "effect": {
+      "action": "decide-application",
+      "deadlineId": "dft-10bd",
+      "onPerformEmits": "application-decided",
+      "onBreachEmits": "decision-deadline-missed",
+      "checkpoint": "decision",
+      "summary": "The Licensing Office must decide a complete application within 10 business days.",
+      "kind": "create-obligation"
+     }
+    },
+    {
+     "id": "dft-deemed-grant",
+     "modal": "permission",
+     "sourceRefs": [
+      {
+       "provision": "1(c)",
+       "quote": "If the Licensing Office does not decide a complete application within the period in subsection (b), the application is deemed granted."
+      }
+     ],
+     "trigger": "decision-deadline-missed",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "applicationComplete"
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "deemed-grant",
+     "effect": {
+      "emits": "permit-granted",
+      "checkpoint": "outcome",
+      "setFacts": {
+       "deemedGranted": true
+      },
+      "status": {
+       "force": "permission",
+       "holderId": "applicant",
+       "action": "operate-food-vehicle"
+      },
+      "summary": "The deadline passed without a decision, so the application is deemed granted.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "dft-grant",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(a)",
+       "quote": "shall grant a permit to an applicant who holds liability insurance and has passed a fire safety inspection"
+      }
+     ],
+     "trigger": "application-decided",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "hasInsurance"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "passedInspection"
+        }
+       }
+      ]
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "deemedGranted"
+       }
+      }
+     ],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "grant",
+     "effect": {
+      "emits": "permit-granted",
+      "checkpoint": "outcome",
+      "status": {
+       "force": "permission",
+       "holderId": "applicant",
+       "action": "operate-food-vehicle"
+      },
+      "summary": "An insured, inspected applicant receives a permit.",
+      "kind": "record",
+      "exceptions": [
+       {
+        "id": "already-deemed-granted",
+        "label": "The application was already deemed granted when the deadline passed",
+        "sourceRefs": [
+         {
+          "provision": "1(c)",
+          "quote": "the application is deemed granted"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "dft-provisional",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(c)",
+       "quote": "The Licensing Office shall issue that applicant a provisional permit."
+      }
+     ],
+     "trigger": "application-decided",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "hasInsurance"
+        }
+       },
+       {
+        "op": "not",
+        "arg": {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "passedInspection"
+         }
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "pendingInspection"
+        }
+       }
+      ]
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "deemedGranted"
+       }
+      }
+     ],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "provisional",
+     "effect": {
+      "emits": "permit-granted",
+      "checkpoint": "outcome",
+      "status": {
+       "force": "permission",
+       "holderId": "applicant",
+       "action": "operate-provisionally"
+      },
+      "summary": "An insured applicant still waiting for a requested inspection receives a provisional permit.",
+      "kind": "record",
+      "exceptions": [
+       {
+        "id": "already-deemed-granted",
+        "label": "The application was already deemed granted when the deadline passed",
+        "sourceRefs": [
+         {
+          "provision": "1(c)",
+          "quote": "the application is deemed granted"
+         }
+        ]
+       }
+      ]
+     },
+     "after": [
+      "dft-grant"
+     ]
+    },
+    {
+     "id": "dft-deny",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(b)",
+       "quote": "shall deny a permit to an applicant who does not meet subsection (a)"
+      }
+     ],
+     "trigger": "application-decided",
+     "when": {
+      "op": "not",
+      "arg": {
+       "op": "and",
+       "terms": [
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "hasInsurance"
+         }
+        },
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "passedInspection"
+         }
+        }
+       ]
+      }
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "deemedGranted"
+       }
+      },
+      {
+       "op": "and",
+       "terms": [
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "hasInsurance"
+         }
+        },
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "pendingInspection"
+         }
+        }
+       ]
+      }
+     ],
+     "operation": "record",
+     "actorId": "licensing-office",
+     "explanationKey": "deny",
+     "effect": {
+      "emits": "permit-denied",
+      "checkpoint": "outcome",
+      "summary": "An applicant who does not meet the requirements is denied.",
+      "kind": "record",
+      "exceptions": [
+       {
+        "id": "already-deemed-granted",
+        "label": "The application was already deemed granted when the deadline passed",
+        "sourceRefs": [
+         {
+          "provision": "1(c)",
+          "quote": "the application is deemed granted"
+         }
+        ]
+       },
+       {
+        "id": "inspection-pending",
+        "label": "An insured applicant awaiting a requested inspection is not denied",
+        "sourceRefs": [
+         {
+          "provision": "2(c)",
+          "quote": "Subsection (b) does not apply to an insured applicant whose requested fire safety inspection has not yet been performed."
+         }
+        ]
+       }
+      ]
+     },
+     "after": [
+      "dft-provisional"
+     ]
+    },
+    {
+     "id": "dft-fee-duty",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "A permit holder shall pay a permit fee of 250 dollars to the Town."
+      }
+     ],
+     "trigger": "permit-granted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "isNonprofit"
+       }
+      }
+     ],
+     "operation": "create-obligation",
+     "actorId": "applicant",
+     "explanationKey": "fee-duty",
+     "effect": {
+      "action": "pay-fee",
+      "deadlineId": null,
+      "onPerformEmits": "fee-paid",
+      "checkpoint": "fee",
+      "summary": "The permit holder must pay the 250-dollar fee unless exempt.",
+      "kind": "create-obligation",
+      "exceptions": [
+       {
+        "id": "nonprofit-exempt",
+        "label": "Nonprofit organizations are exempt from the fee",
+        "sourceRefs": [
+         {
+          "provision": "3(b)",
+          "quote": "A nonprofit organization is exempt from the fee in subsection (a)."
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "dft-appeal-window",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "4(a)",
+       "quote": "may appeal to the Town Council within 30 days after the denial"
+      }
+     ],
+     "trigger": "permit-denied",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "schedule",
+     "actorId": "applicant",
+     "explanationKey": "appeal-window",
+     "effect": {
+      "deadlineId": "dft-30-days",
+      "emits": "appeal-window-closed",
+      "checkpoint": "appeal-window",
+      "summary": "A denied applicant has 30 days to appeal to the Town Council.",
+      "kind": "schedule"
+     }
+    },
+    {
+     "id": "dft-fee-payment",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "shall pay a permit fee of 250 dollars to the Town"
+      }
+     ],
+     "trigger": "fee-paid",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "applicant",
+     "explanationKey": "fee-payment",
+     "effect": {
+      "checkpoint": "fee-payment",
+      "transfer": {
+       "account": "applicantFunds",
+       "to": "townRevenue",
+       "amountFact": "permitFee"
+      },
+      "summary": "The fee moves from the applicant to the Town.",
+      "kind": "record"
+     }
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-riverbend-mobile-food-vending-ordinance-as-amended-by-draft",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(a)",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "1(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "3(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "4(a)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  }
+ ],
+ "interpretations": [],
+ "assumptions": [
+  {
+   "id": "decision-time-assumed",
+   "label": "Office decision time",
+   "description": "How many business days the Licensing Office takes to decide.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "fee-payment-time-assumed",
+   "label": "Fee payment time",
+   "description": "The applicant pays the fee two business days after the permit issues.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "licensing-queue-illustrative",
+   "label": "Illustrative licensing workload",
+   "description": "Applications arrive daily and one clerk decides a fixed number per business day.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Not based on measured workload."
+   ]
+  },
+  {
+   "id": "riverbend-business-days",
+   "label": "Riverbend business days",
+   "description": "Monday to Friday excluding invented holidays.",
+   "classification": "interpretation",
+   "limitations": [
+    "Riverbend is fictional."
+   ]
+  },
+  {
+   "id": "appeal-days-calendar",
+   "label": "Appeal days are calendar days",
+   "description": "The 30-day appeal window counts calendar days and is not extended when it ends on a weekend.",
+   "classification": "interpretation",
+   "limitations": [
+    "The fictional text does not say."
+   ]
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "eligible",
+   "title": "Eligible applicant",
+   "question": "How does an eligible applicant get a permit?",
+   "summary": "An insured applicant who passed the fire inspection files a complete application. The office decides in 8 business days and the applicant pays the fee 2 business days later.",
+   "hypothetical": true,
+   "startDate": "2027-04-05",
+   "calendarId": "riverbend-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "applicationComplete": true,
+    "hasInsurance": true,
+    "passedInspection": true,
+    "pendingInspection": false,
+    "isNonprofit": false,
+    "deemedGranted": false,
+    "applicantFunds": 1000,
+    "townRevenue": 0,
+    "permitFee": 250
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "file",
+     "day": 0,
+     "kind": "application-filed",
+     "actorId": "applicant",
+     "label": "The applicant files a complete application"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "decide-application",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 8,
+      "unit": "business-day"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "action": "pay-fee",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 2,
+      "unit": "business-day"
+     },
+     "assumptionId": "fee-payment-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "decision-delay",
+     "label": "Business days the office takes to decide",
+     "help": "An operational assumption about office workload, separate from the legal deadline.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "decide-application"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "id": "insurance",
+     "label": "Applicant holds liability insurance",
+     "help": "Yes, no or unknown.",
+     "control": "tristate",
+     "target": {
+      "kind": "fact",
+      "factId": "hasInsurance"
+     }
+    },
+    {
+     "id": "inspection",
+     "label": "Applicant passed the fire inspection",
+     "help": "Whether the inspection has been passed.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "passedInspection"
+     }
+    },
+    {
+     "id": "nonprofit",
+     "label": "Applicant is a nonprofit",
+     "help": "The draft exempts nonprofits from the fee.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "isNonprofit"
+     }
+    }
+   ],
+   "assumptions": [
+    "decision-time-assumed",
+    "fee-payment-time-assumed",
+    "riverbend-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "Eligibility rules decide the outcome; the decision timing is a separate assumption."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "decision",
+      "present": true,
+      "reasoning": "20 business days from Monday 5 April, skipping the fictional 16 April holiday, is 4 May; deciding on 15 April is on time.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-05-04",
+      "eventDate": "2027-04-15"
+     },
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "Granted on the decision day.",
+      "eventDate": "2027-04-15"
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": true,
+      "reasoning": "Two business days after 15 April, skipping 16 April, is 20 April.",
+      "eventDate": "2027-04-20"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "decision",
+      "present": true,
+      "reasoning": "10 business days from 5 April, skipping 16 April, is 20 April.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-04-20"
+     },
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "Granted 15 April.",
+      "eventDate": "2027-04-15"
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": true,
+      "reasoning": "Paid 20 April.",
+      "eventDate": "2027-04-20"
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    },
+    "proposal": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    }
+   },
+   "conservedAccounts": [
+    "applicantFunds",
+    "townRevenue"
+   ],
+   "workload": {
+    "action": "decide-application",
+    "arrivalsPerDay": 4,
+    "workers": 1,
+    "unitsPerWorkerDay": 3,
+    "unitsPerItem": 1,
+    "outageDays": [],
+    "assumptionId": "licensing-queue-illustrative",
+    "sourceKind": "assumption"
+   }
+  },
+  {
+   "id": "slow-decision",
+   "title": "Slow decision",
+   "question": "What if the office takes 15 business days to decide?",
+   "summary": "The office takes 15 business days. That is on time under the current 20-day rule. Under the draft the 10-day deadline passes first, so the application is deemed granted and the later decision changes nothing.",
+   "hypothetical": true,
+   "startDate": "2027-04-05",
+   "calendarId": "riverbend-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "applicationComplete": true,
+    "hasInsurance": true,
+    "passedInspection": true,
+    "pendingInspection": false,
+    "isNonprofit": false,
+    "deemedGranted": false,
+    "applicantFunds": 1000,
+    "townRevenue": 0,
+    "permitFee": 250
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "file",
+     "day": 0,
+     "kind": "application-filed",
+     "actorId": "applicant",
+     "label": "The applicant files a complete application"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "decide-application",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 15,
+      "unit": "business-day"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "action": "pay-fee",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 2,
+      "unit": "business-day"
+     },
+     "assumptionId": "fee-payment-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "decision-delay",
+     "label": "Business days the office takes to decide",
+     "help": "An operational assumption about office workload, separate from the legal deadline.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "decide-application"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "id": "nonprofit",
+     "label": "Applicant is a nonprofit",
+     "help": "The draft exempts nonprofits from the fee.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "isNonprofit"
+     }
+    }
+   ],
+   "assumptions": [
+    "decision-time-assumed",
+    "fee-payment-time-assumed",
+    "riverbend-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "A deemed approval turns a missed deadline into a legal result, separate from the late decision."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "decision",
+      "present": true,
+      "reasoning": "Decided 27 April, before the 4 May deadline.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-05-04"
+     },
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "Granted on 27 April.",
+      "eventDate": "2027-04-27"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "decision",
+      "present": true,
+      "reasoning": "Due 20 April; decided 27 April, so the duty is breached.",
+      "dutyState": "breached",
+      "dueDate": "2027-04-20"
+     },
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "§ 1(c): deemed granted the day after the deadline, 21 April.",
+      "eventDate": "2027-04-21"
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": true,
+      "reasoning": "Two business days after 21 April is 23 April.",
+      "eventDate": "2027-04-23"
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    },
+    "proposal": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    }
+   },
+   "conservedAccounts": [
+    "applicantFunds",
+    "townRevenue"
+   ],
+   "workload": {
+    "action": "decide-application",
+    "arrivalsPerDay": 4,
+    "workers": 1,
+    "unitsPerWorkerDay": 3,
+    "unitsPerItem": 1,
+    "outageDays": [],
+    "assumptionId": "licensing-queue-illustrative",
+    "sourceKind": "assumption"
+   }
+  },
+  {
+   "id": "inspection-pending",
+   "title": "Inspection still pending",
+   "question": "What if the fire inspection has been requested but not yet done?",
+   "summary": "The applicant is insured and asked for an inspection, which has not happened yet. The current ordinance requires denial, which opens a 30-day appeal window. The draft issues a provisional permit instead.",
+   "hypothetical": true,
+   "startDate": "2027-04-05",
+   "calendarId": "riverbend-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "applicationComplete": true,
+    "hasInsurance": true,
+    "passedInspection": false,
+    "pendingInspection": true,
+    "isNonprofit": false,
+    "deemedGranted": false,
+    "applicantFunds": 1000,
+    "townRevenue": 0,
+    "permitFee": 250
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "file",
+     "day": 0,
+     "kind": "application-filed",
+     "actorId": "applicant",
+     "label": "The applicant files a complete application"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "decide-application",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 8,
+      "unit": "business-day"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "action": "pay-fee",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 2,
+      "unit": "business-day"
+     },
+     "assumptionId": "fee-payment-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "pending",
+     "label": "Inspection requested but not yet performed",
+     "help": "Relevant only under the draft's provisional permit rule.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "pendingInspection"
+     }
+    },
+    {
+     "id": "inspection",
+     "label": "Applicant passed the fire inspection",
+     "help": "Whether the inspection has been passed.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "passedInspection"
+     }
+    },
+    {
+     "id": "decision-delay",
+     "label": "Business days the office takes to decide",
+     "help": "An operational assumption about office workload, separate from the legal deadline.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "decide-application"
+     },
+     "assumptionId": "decision-time-assumed"
+    }
+   ],
+   "assumptions": [
+    "decision-time-assumed",
+    "fee-payment-time-assumed",
+    "riverbend-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "An exception names the duty it modifies and why it applies."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "§ 2(b): denied on 15 April.",
+      "eventDate": "2027-04-15"
+     },
+     {
+      "checkpoint": "appeal-window",
+      "present": true,
+      "reasoning": "30 calendar days after 15 April is 15 May.",
+      "dueDate": "2027-05-15"
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": false,
+      "reasoning": "No permit, so no fee."
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "outcome",
+      "present": true,
+      "reasoning": "§ 2(c): provisional permit on 15 April.",
+      "eventDate": "2027-04-15"
+     },
+     {
+      "checkpoint": "appeal-window",
+      "present": false,
+      "reasoning": "No denial, so no appeal window."
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": true,
+      "reasoning": "Fee paid 20 April.",
+      "eventDate": "2027-04-20"
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "applicantFunds": 1000,
+     "townRevenue": 0
+    },
+    "proposal": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    }
+   },
+   "conservedAccounts": [
+    "applicantFunds",
+    "townRevenue"
+   ]
+  },
+  {
+   "id": "nonprofit",
+   "title": "Nonprofit applicant",
+   "question": "Does a nonprofit pay the permit fee?",
+   "summary": "An eligible nonprofit applies. The current ordinance charges every permit holder. The draft exempts nonprofits.",
+   "hypothetical": true,
+   "startDate": "2027-04-05",
+   "calendarId": "riverbend-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "applicationComplete": true,
+    "hasInsurance": true,
+    "passedInspection": true,
+    "pendingInspection": false,
+    "isNonprofit": true,
+    "deemedGranted": false,
+    "applicantFunds": 1000,
+    "townRevenue": 0,
+    "permitFee": 250
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "file",
+     "day": 0,
+     "kind": "application-filed",
+     "actorId": "applicant",
+     "label": "The applicant files a complete application"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "decide-application",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 8,
+      "unit": "business-day"
+     },
+     "assumptionId": "decision-time-assumed"
+    },
+    {
+     "action": "pay-fee",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 2,
+      "unit": "business-day"
+     },
+     "assumptionId": "fee-payment-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "nonprofit",
+     "label": "Applicant is a nonprofit",
+     "help": "The draft exempts nonprofits from the fee.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "isNonprofit"
+     }
+    },
+    {
+     "id": "decision-delay",
+     "label": "Business days the office takes to decide",
+     "help": "An operational assumption about office workload, separate from the legal deadline.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "decide-application"
+     },
+     "assumptionId": "decision-time-assumed"
+    }
+   ],
+   "assumptions": [
+    "decision-time-assumed",
+    "fee-payment-time-assumed",
+    "riverbend-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "Exceptions can remove a duty entirely, and the model shows which one applied."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "fee",
+      "present": true,
+      "reasoning": "§ 3(a) applies to every permit holder; paid 20 April.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": true,
+      "reasoning": "Paid 20 April.",
+      "eventDate": "2027-04-20"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "fee",
+      "present": false,
+      "reasoning": "§ 3(b) exempts nonprofits, so no fee duty arises."
+     },
+     {
+      "checkpoint": "fee-payment",
+      "present": false,
+      "reasoning": "Nothing is paid."
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "applicantFunds": 750,
+     "townRevenue": 250
+    },
+    "proposal": {
+     "applicantFunds": 1000,
+     "townRevenue": 0
+    }
+   },
+   "conservedAccounts": [
+    "applicantFunds",
+    "townRevenue"
+   ]
+  }
+ ],
+ "scene": {
+  "id": "riverbend-map",
+  "title": "Who handles a permit in Riverbend",
+  "width": 720,
+  "height": 420,
+  "groups": [
+   {
+    "id": "town",
+    "label": "Town of Riverbend"
+   }
+  ],
+  "nodes": [
+   {
+    "actorId": "applicant",
+    "x": 100,
+    "y": 210,
+    "icon": "person"
+   },
+   {
+    "actorId": "licensing-office",
+    "x": 360,
+    "y": 120,
+    "icon": "office",
+    "group": "town"
+   },
+   {
+    "actorId": "town",
+    "x": 600,
+    "y": 210,
+    "icon": "ledger",
+    "group": "town"
+   },
+   {
+    "actorId": "town-council",
+    "x": 360,
+    "y": 340,
+    "icon": "court",
+    "group": "town"
+   }
+  ],
+  "edges": [
+   {
+    "id": "file",
+    "from": "applicant",
+    "to": "licensing-office",
+    "kind": "route",
+    "label": "files",
+    "eventKinds": [
+     "application-filed"
+    ]
+   },
+   {
+    "id": "decide",
+    "from": "licensing-office",
+    "to": "applicant",
+    "kind": "route",
+    "label": "decision",
+    "eventKinds": [
+     "application-decided",
+     "permit-granted",
+     "permit-denied"
+    ]
+   },
+   {
+    "id": "fee",
+    "from": "applicant",
+    "to": "town",
+    "kind": "route",
+    "label": "pays fee",
+    "eventKinds": [
+     "fee-paid",
+     "cur-fee-payment",
+     "dft-fee-payment"
+    ]
+   },
+   {
+    "id": "appeal",
+    "from": "applicant",
+    "to": "town-council",
+    "kind": "authority",
+    "label": "may appeal",
+    "eventKinds": [
+     "permit-denied",
+     "cur-appeal-window",
+     "dft-appeal-window"
+    ]
+   }
+  ]
+ },
+ "glossary": [
+  {
+   "id": "deemed-granted",
+   "term": "Deemed granted",
+   "plain": "Treated as approved because the office missed its deadline.",
+   "detail": "Under the fictional draft, silence past 10 business days counts as approval.",
+   "aliases": [
+    "deemed approval",
+    "automatic approval"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "1(c)",
+     "quote": "the application is deemed granted"
+    }
+   ],
+   "related": [
+    "provisional-permit"
+   ]
+  },
+  {
+   "id": "provisional-permit",
+   "term": "Provisional permit",
+   "plain": "A temporary permit while a requested inspection is pending.",
+   "detail": "Only under the fictional draft.",
+   "aliases": [
+    "provisional"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "2(c)",
+     "quote": "The Licensing Office shall issue that applicant a provisional permit."
+    }
+   ],
+   "related": [
+    "deemed-granted"
+   ]
+  },
+  {
+   "id": "permit-fee",
+   "term": "Permit fee",
+   "plain": "250 dollars paid to the Town.",
+   "detail": "The fictional draft exempts nonprofits.",
+   "aliases": [
+    "fee",
+    "nonprofit"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "3(a)",
+     "quote": "A permit holder shall pay a permit fee of 250 dollars to the Town."
+    }
+   ],
+   "related": []
+  }
+ ],
+ "explanations": {
+  "decide": {
+   "plain": "The office must decide within 20 business days.",
+   "detail": "Section 1(b) of the current fictional ordinance."
+  },
+  "decide-draft": {
+   "plain": "The office must decide within 10 business days.",
+   "detail": "Section 1(b) of the fictional draft."
+  },
+  "grant": {
+   "plain": "An insured, inspected applicant gets a permit.",
+   "detail": "Section 2(a)."
+  },
+  "deny": {
+   "plain": "An applicant who does not qualify is denied.",
+   "detail": "Section 2(b)."
+  },
+  "deemed-grant": {
+   "plain": "The deadline passed, so the application counts as granted.",
+   "detail": "Section 1(c) of the fictional draft."
+  },
+  "provisional": {
+   "plain": "A provisional permit issues while the inspection is pending.",
+   "detail": "Section 2(c) of the fictional draft."
+  },
+  "fee-duty": {
+   "plain": "The permit holder owes the fee.",
+   "detail": "Section 3."
+  },
+  "fee-payment": {
+   "plain": "The fee moves from the applicant to the Town.",
+   "detail": "Whole-dollar accounting: nothing is created or lost."
+  },
+  "appeal-window": {
+   "plain": "A denied applicant may appeal within 30 days.",
+   "detail": "Section 4(a). The model counts calendar days by assumption."
+  }
+ },
+ "eventLabels": {
+  "application-filed": "Application filed",
+  "application-decided": "Office decides",
+  "permit-granted": "Permit issued",
+  "permit-denied": "Permit denied",
+  "decision-deadline-missed": "Decision deadline missed",
+  "fee-paid": "Fee paid",
+  "appeal-window-closed": "Appeal window closed",
+  "performed:decide-application": "Office makes its decision",
+  "deadline-passed:decide-application": "Decision deadline passed",
+  "performed:pay-fee": "Applicant pays the fee",
+  "deadline-passed:pay-fee": "Fee deadline passed"
+ }
+}

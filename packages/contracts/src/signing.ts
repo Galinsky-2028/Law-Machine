@@ -33,10 +33,10 @@ const SHA = /^[a-f0-9]{64}$/;
 const time = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z)?$/.test(v) && Number.isFinite(Date.parse(v));
 const b64url = {
   encode(bytes: Uint8Array): string { let s = ''; for (const b of bytes) s += String.fromCharCode(b); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); },
-  decode(text: string): Uint8Array { const s = atob(text.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((text.length + 3) % 4)); return Uint8Array.from(s, c => c.charCodeAt(0)); }
+  decode(text: string): Uint8Array<ArrayBuffer> { const s = atob(text.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((text.length + 3) % 4)); return new Uint8Array(Array.from(s, c => c.charCodeAt(0))); }
 };
 const payload = (keyId: string, manifestDigest: string, signedAt: string) =>
-  new TextEncoder().encode(canonicalJSON({ format: SIGNATURE_FORMAT, keyId, manifestDigest, signedAt }));
+  new TextEncoder().encode(canonicalJSON({ format: SIGNATURE_FORMAT, keyId, manifestDigest, signedAt })) as Uint8Array<ArrayBuffer>;
 const algorithm = { name: 'ECDSA', namedCurve: 'P-256' } as const;
 
 export async function generateSigningKey(): Promise<{ privateKeyJwk: JsonWebKey; publicKeyJwk: JsonWebKey }> {

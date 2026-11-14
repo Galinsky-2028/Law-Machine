@@ -134,7 +134,8 @@ export function runPackScenario(release: PackRelease, frameworkId: string, scena
   if (framework.role === 'baseline' && scenario.startDate < framework.asOf) warnings.add('SCENARIO_PREDATES_BASELINE_SNAPSHOT');
   if (framework.gaps.length) warnings.add('FRAMEWORK_HAS_DECLARED_GAPS');
 
-  const scheduler = new DeterministicScheduler(Math.min(options.maxEvents ?? 5000, 100000), 1000);
+  const budget = Math.max(1, Math.min(Math.floor(options.maxEvents ?? 5000), 100000));
+  const scheduler = new DeterministicScheduler(budget, Math.min(1000, budget));
   const pending = new Map<string, Pending>();
   const events: PackEvent[] = [];
   const duties = new Map<string, MutableDuty>();

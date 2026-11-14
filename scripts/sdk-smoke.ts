@@ -25,3 +25,22 @@ if(!found.ok || found.value.text!=='Toy requirement')throw new Error('Headless S
 const unavailable=result.value.simulate('s1');
 if(unavailable.ok || unavailable.error.code!=='UNSUPPORTED_FEATURE')throw new Error('Headless SDK falsely reports simulation');
 console.log('Headless SDK: source-verified fictional release and pinned provision lookup pass; simulation explicitly unavailable.');
+
+// LM-059: a separate headless consumer loads a published pack release through the fetch path.
+import { fetchPackRelease } from '../packages/sdk/src/index.ts';
+import { readFile as readPublished } from 'node:fs/promises';
+const publicRoot = new URL('../apps/web/public/releases/', import.meta.url);
+const catalog = JSON.parse(await readPublished(new URL('catalog.json', publicRoot), 'utf8')) as { packs: { packId: string; current: string }[] };
+const trust = JSON.parse(await readPublished(new URL('trust.json', publicRoot), 'utf8'));
+const fileFetch = async (url: string) => {
+  try { const bytes = await readPublished(new URL(url.replace(/^releases\//, ''), publicRoot)); return { ok: true, status: 200, arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer }; }
+  catch { return { ok: false, status: 404, arrayBuffer: async () => new ArrayBuffer(0) }; }
+};
+for (const entry of catalog.packs) {
+  const session = await fetchPackRelease('releases', entry.packId, entry.current, { fetch: fileFetch, trust });
+  const first = session.release.scenarios[0]!;
+  const { run } = session.runScenario(first.id);
+  const why = session.getTraceExplanation(run, run.events.find(e => e.basis === 'legal')!.id);
+  if (!why.excerpts.length || why.excerpts.some(x => x.stale)) throw new Error('Headless SDK could not resolve a pinned citation for ' + entry.packId);
+  console.log('Headless SDK: ' + entry.packId + ' ' + entry.current.slice(0, 12) + ' verified (' + (session.signature.valid ? 'signed ' + session.signature.keyId : 'unsigned: ' + session.signature.reason) + '); ' + first.id + ' ran ' + run.events.length + ' events.');
+}

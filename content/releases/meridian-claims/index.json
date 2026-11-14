@@ -1,0 +1,21 @@
+{
+ "packId": "meridian-claims",
+ "current": "db4757dae3ec8cf9215ae44df2eee8ef735d72f5b94306a0799fb5a590e5420c",
+ "releases": [
+  {
+   "manifestDigest": "db4757dae3ec8cf9215ae44df2eee8ef735d72f5b94306a0799fb5a590e5420c",
+   "releaseId": "meridian-claims@2026.11.0",
+   "label": "2026.11.0",
+   "publishedAt": "2026-11-14",
+   "status": "current",
+   "note": null,
+   "signature": {
+    "format": "law-machine-release-signature-v1",
+    "keyId": "lm-publisher-2026-11",
+    "manifestDigest": "db4757dae3ec8cf9215ae44df2eee8ef735d72f5b94306a0799fb5a590e5420c",
+    "signedAt": "2026-11-14",
+    "signature": "yI0bJ4lPpSJrBaKwdpFNeeKgb6BP2ELzDkA1BNC-9Rqlt5o5LtFIDUrpMZ7I9rhooS-zu10V7LWbKKvxelF9yw"
+   }
+  }
+ ]
+}

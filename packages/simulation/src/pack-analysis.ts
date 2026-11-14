@@ -161,6 +161,19 @@ export function checkGolden(release: PackRelease, scenario: ScenarioSpec, runs: 
       results.push({ frameworkId, checkpoint: x.checkpoint, passed: canonicalJSON(want) === canonicalJSON(got), expected: canonicalJSON(want), actual: canonicalJSON(got), reasoning: x.reasoning });
     }
   }
+  for (const [frameworkId, values] of Object.entries(scenario.expectedFacts ?? {})) {
+    const run = runs[frameworkId];
+    if (!run) throw Error('GOLDEN_RUN_MISSING');
+    for (const [factId, value] of Object.entries(values))
+      results.push({ frameworkId, checkpoint: 'fact:' + factId, passed: run.facts[factId] === value, expected: canonicalJSON(value), actual: canonicalJSON(run.facts[factId] ?? null), reasoning: 'Independently computed end-of-run value' });
+  }
+  if (scenario.conservedAccounts?.length) {
+    const start = scenario.conservedAccounts.reduce((n, a) => n + (scenario.facts[a] as number), 0);
+    for (const [frameworkId, run] of Object.entries(runs)) {
+      const end = scenario.conservedAccounts.reduce((n, a) => n + (run.facts[a] as number), 0);
+      results.push({ frameworkId, checkpoint: 'conservation', passed: start === end, expected: String(start), actual: String(end), reasoning: 'Integer transfers move money between accounts without creating or losing any' });
+    }
+  }
   void release;
   return results;
 }

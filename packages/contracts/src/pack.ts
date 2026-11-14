@@ -171,6 +171,10 @@ export type ScenarioSpec = {
   readonly learn: readonly string[];
   /** Independently specified expectations (golden checkpoints), per framework id. */
   readonly expected: Readonly<Record<string, readonly ExpectedCheckpoint[]>>;
+  /** Independently computed end-of-run fact values (e.g. account balances), per framework id. */
+  readonly expectedFacts?: Readonly<Record<string, Readonly<Record<string, FactValue>>>>;
+  /** Accounts whose total must be conserved by every run (resource accounting). */
+  readonly conservedAccounts?: readonly string[];
   readonly tour?: readonly TourStep[];
 };
 export type ExpectedCheckpoint = {

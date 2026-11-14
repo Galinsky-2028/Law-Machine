@@ -41,7 +41,7 @@ const date = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}
   Number.isFinite(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v;
 const text = (v: unknown, max = 4000): v is string => typeof v === 'string' && v.trim().length > 0 && v.length <= max;
 const list = (v: unknown, max: number): v is unknown[] => Array.isArray(v) && v.length <= max;
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'untitled';
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+/, '').slice(0, 60).replace(/-+$/, '') || 'untitled';
 
 /** Stable, human-meaningful provision identity derived from displayed numbering. */
 export function provisionPaths(provisions: readonly { id: string; parentId: string | null; citation: string | null; span: { start: number } }[]): Map<string, { path: string; citation: string }> {
@@ -274,7 +274,10 @@ export async function buildPackRelease(input: unknown, sourceBytes: ReadonlyMap<
     for (const d of compiled.diagnostics) fail(d.code, path + ' ' + d.path, 'Rule compilation failed');
     if (!compiled.compiled) continue;
     // Explicit, source-mapped coverage: a summary without a rule is never "modeled".
-    const dependents = new Map(compiled.compiled.sourceDependencies.map(d => [d.provisionId, d.ruleIds]));
+    const dependents = new Map<string, readonly string[]>(compiled.compiled.sourceDependencies.map(d => [d.provisionId, d.ruleIds]));
+    // Exceptions are operative provenance too: a provision cited only by an exception is modeled.
+    for (const r of rules) for (const x of r.effect.exceptions ?? []) for (const ref of x.sourceRefs)
+      dependents.set(ref.provisionId, [...new Set([...(dependents.get(ref.provisionId) ?? []), r.id])].sort());
     const mapping = new Map<string, { mode: CoverageReport['entries'][number]['mode']; reason: string | null }>();
     for (const [ci, c] of f.coverage.entries()) {
       const target = byPath.get(f.sourceId)!.get(c?.provision);
@@ -355,6 +358,12 @@ export async function buildPackRelease(input: unknown, sourceBytes: ReadonlyMap<
       for (const x of expected) if (!x || !checkpoints.has(x.checkpoint) || typeof x.present !== 'boolean' || !text(x.reasoning, 1000)) fail('SCENARIO_EXPECTED_INVALID', path + '.expected.' + fid, 'Each expectation names a checkpoint and independent reasoning');
     }
     for (const f of pack.frameworks) if (!Object.hasOwn(s.expected, f.id)) fail('SCENARIO_EXPECTED_MISSING', path + '.expected', 'No independent expectation for ' + f.id);
+    for (const [fid, values] of Object.entries(s.expectedFacts ?? {})) {
+      if (!frameworkIds.has(fid) || !values || typeof values !== 'object') { fail('SCENARIO_EXPECTED_FACTS_INVALID', path + '.expectedFacts', 'Unknown framework'); continue; }
+      for (const [k, v] of Object.entries(values)) if (!factIds.has(k) || typeof v !== factTypes[k]) fail('SCENARIO_EXPECTED_FACTS_INVALID', path + '.expectedFacts.' + fid, 'Undeclared or mistyped fact ' + k);
+    }
+    if (s.conservedAccounts !== undefined && (!list(s.conservedAccounts, 20) || s.conservedAccounts.some(a => factTypes[a as string] !== 'number' || typeof s.facts[a as string] !== 'number')))
+      fail('SCENARIO_CONSERVATION_INVALID', path + '.conservedAccounts', 'Conserved accounts must be numeric facts with starting values');
   }
   const scene = pack.scene;
   if (!id(scene.id) || !text(scene.title, 200) || !list(scene.nodes, 200) || !list(scene.edges, 400) || !list(scene.groups, 50) ||

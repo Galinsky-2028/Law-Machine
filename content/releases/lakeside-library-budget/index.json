@@ -1,0 +1,21 @@
+{
+ "packId": "lakeside-library-budget",
+ "current": "18239178c40c69c4b43b36636fbceb4464c1aa6a022b9bd2bf96b3fc65ae86d1",
+ "releases": [
+  {
+   "manifestDigest": "18239178c40c69c4b43b36636fbceb4464c1aa6a022b9bd2bf96b3fc65ae86d1",
+   "releaseId": "lakeside-library-budget@2026.11.0",
+   "label": "2026.11.0",
+   "publishedAt": "2026-11-14",
+   "status": "current",
+   "note": null,
+   "signature": {
+    "format": "law-machine-release-signature-v1",
+    "keyId": "lm-publisher-2026-11",
+    "manifestDigest": "18239178c40c69c4b43b36636fbceb4464c1aa6a022b9bd2bf96b3fc65ae86d1",
+    "signedAt": "2026-11-14",
+    "signature": "T094FB7AbH3pR3gs4Yagy9pMiAv_57sO0yAmtO91eFy0ZmlMK870eh9Pk5O3i2RF-8_HogldYGXJTnFICgVWMw"
+   }
+  }
+ ]
+}
