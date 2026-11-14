@@ -20,8 +20,11 @@ describe('workspace boundaries', () => {
     expect(secretFindings('ordinary hypothetical source text')).toEqual([]);
   });
   it('runs without providers and reports limitations explicitly', async () => {
-    const response = GET();
-    expect(await response.json()).toEqual({ status: 'ok', mode: 'fixture', application: 'law-machine', simulationAvailable: false });
+    const response = await GET();
+    const body = await response.json();
+    // Public reading needs only committed releases; no database or provider is configured here.
+    expect(body).toMatchObject({ application: 'law-machine', filingsAccepted: false, database: 'not-configured', authoring: 'disabled' });
+    expect(body.simulationAvailable).toBe(body.publishedPacks > 0);
     expect(response.headers.get('cache-control')).toBe('no-store');
   });
 });

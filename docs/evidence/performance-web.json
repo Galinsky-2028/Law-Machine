@@ -1,0 +1,32 @@
+{
+ "measuredAt": "2026-11-14T23:42:33.035Z",
+ "url": "/packs/meridian-claims/scenarios/wrong-agency",
+ "server": "http://localhost:3000",
+ "note": "Local production build in a cloud container; Chromium headless. Not field data.",
+ "targets": {
+  "lcpMs": 2500,
+  "cls": 0.1,
+  "interactionMs": 200,
+  "criticalAssetsKB": 1024
+ },
+ "results": {
+  "desktop": {
+   "lcpMs": 104,
+   "cls": 0.061,
+   "transferredKB": 176,
+   "scriptKB": 167,
+   "releaseKB": 0,
+   "interactiveAfterLoadMs": 121,
+   "compareInteractionMs": 118
+  },
+  "phone": {
+   "lcpMs": 628,
+   "cls": 0.05,
+   "transferredKB": 175,
+   "scriptKB": 167,
+   "releaseKB": 0,
+   "interactiveAfterLoadMs": 2426,
+   "compareInteractionMs": 215
+  }
+ }
+}

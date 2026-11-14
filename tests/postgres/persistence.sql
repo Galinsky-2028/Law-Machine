@@ -127,6 +127,12 @@ DROP TRIGGER lm_ci_audit_failure ON lm_audit;
 DROP FUNCTION lm_ci_reject_audit();
 -- Test-only inverse in a transaction. The original representative records survive rollback.
 BEGIN;
+-- Inverse of the whole schema, newest first, so later migrations' dependents go first.
+\i db/migrations/0006_down.sql
+\i db/migrations/0005_down.sql
+\i db/migrations/0004_down.sql
+\i db/migrations/0003_down.sql
+\i db/migrations/0002_down.sql
 \i db/migrations/0001_down.sql
 DO $$ BEGIN
  IF to_regclass('public.lm_documents') IS NOT NULL THEN

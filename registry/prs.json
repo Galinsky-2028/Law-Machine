@@ -4,7 +4,7 @@
   "roadmapVersion": 1,
   "planVerified": true,
   "plannedPrCount": 60,
-  "observedAt": "2026-10-17T13:52:32Z",
+  "observedAt": "2026-11-14T23:55:00Z",
   "approval": {
     "basis": "Owner directed implementation of the supplied Law Machine plan in neophilism/Law-Machine on 2026-10-16.",
     "source": "docs/source/ORIGINAL_SPECIFICATION.md"
@@ -604,7 +604,10 @@
       "source": {
         "path": "docs/source/ORIGINAL_SPECIFICATION.md",
         "heading": "LM 030 Complete electronic filing executable pack"
-      }
+      },
+      "contributingPrs": [
+        59
+      ]
     },
     {
       "id": "LM-031",
@@ -625,14 +628,17 @@
         "heading": "LM 031 Public shell catalog and first scene"
       },
       "contributingPrs": [
-        40
+        40,
+        59
       ]
     },
     {
       "id": "LM-032",
       "title": "Systems map and semantic scene projection",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-031",
         "LM-028",
@@ -651,7 +657,9 @@
       "id": "LM-033",
       "title": "Playback timeline and animated journeys",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-032",
         "LM-029"
@@ -669,7 +677,9 @@
       "id": "LM-034",
       "title": "Inspector and guided explanation journey",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-033",
         "LM-013"
@@ -687,7 +697,9 @@
       "id": "LM-035",
       "title": "Synchronized comparison experience",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-034",
         "LM-027"
@@ -705,7 +717,9 @@
       "id": "LM-036",
       "title": "Scenario controls and labeled sandbox forks",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-035",
         "LM-024"
@@ -723,7 +737,9 @@
       "id": "LM-037",
       "title": "Stress testing and sensitivity view",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-036",
         "LM-025"
@@ -741,7 +757,9 @@
       "id": "LM-038",
       "title": "Complete accessible sequence and mobile navigation",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-034",
         "LM-035",
@@ -760,7 +778,9 @@
       "id": "LM-039",
       "title": "Share links and reproducible exports",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-036",
         "LM-026"
@@ -778,7 +798,9 @@
       "id": "LM-040",
       "title": "Search glossary and learning depth",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-031",
         "LM-034"
@@ -796,7 +818,9 @@
       "id": "LM-041",
       "title": "Public explorer acceptance and static distribution",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-035",
         "LM-036",
@@ -819,7 +843,8 @@
       "title": "Database persistence and durable editorial records",
       "origin": "original",
       "prs": [
-        35
+        35,
+        59
       ],
       "dependsOn": [
         "LM-003",
@@ -839,7 +864,9 @@
       "id": "LM-043",
       "title": "Author authentication and authorization",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-042",
         "LM-005"
@@ -857,14 +884,17 @@
         39,
         41,
         44,
-        45
+        45,
+        57
       ]
     },
     {
       "id": "LM-044",
       "title": "Secure source storage and import endpoints",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-043",
         "LM-009",
@@ -888,7 +918,9 @@
       "id": "LM-045",
       "title": "Authoring workbench and model editor",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-044",
         "LM-020",
@@ -908,7 +940,9 @@
       "id": "LM-046",
       "title": "Durable import and compilation runner",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-042",
         "LM-044"
@@ -920,13 +954,18 @@
       "source": {
         "path": "docs/source/ORIGINAL_SPECIFICATION.md",
         "heading": "LM 046 Durable import and compilation runner"
-      }
+      },
+      "contributingPrs": [
+        56
+      ]
     },
     {
       "id": "LM-047",
       "title": "Validation reports editorial review and publication",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-045",
         "LM-046",
@@ -946,7 +985,9 @@
       "id": "LM-048",
       "title": "Optional AI extraction adapter",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-045",
         "LM-046"
@@ -964,7 +1005,9 @@
       "id": "LM-049",
       "title": "Revision maintenance and official source refresh",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-047",
         "LM-016",
@@ -983,7 +1026,9 @@
       "id": "LM-050",
       "title": "Authoring API contracts and integration documentation",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-047",
         "LM-048",
@@ -1002,7 +1047,9 @@
       "id": "LM-051",
       "title": "Server verification and optional saved scenarios",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-039",
         "LM-043",
@@ -1022,7 +1069,9 @@
       "id": "LM-052",
       "title": "Telemetry privacy and operating diagnostics",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-041",
         "LM-050"
@@ -1040,7 +1089,9 @@
       "id": "LM-053",
       "title": "Backups restore and audit integrity",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-047",
         "LM-052"
@@ -1058,7 +1109,9 @@
       "id": "LM-054",
       "title": "Deployment migrations and rollback",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-041",
         "LM-050",
@@ -1078,7 +1131,9 @@
       "id": "LM-055",
       "title": "Performance budgets and large model behavior",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-037",
         "LM-038",
@@ -1098,7 +1153,9 @@
       "id": "LM-056",
       "title": "Adversarial review and security fixes",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-050",
         "LM-051",
@@ -1118,7 +1175,9 @@
       "id": "LM-057",
       "title": "Release signing verification and key rotation",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-004",
         "LM-047",
@@ -1138,7 +1197,9 @@
       "id": "LM-058",
       "title": "Second domain pack and domain reuse proof",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-041",
         "LM-047",
@@ -1157,7 +1218,9 @@
       "id": "LM-059",
       "title": "Shared SDK release and Ask Bill handoff",
       "origin": "original",
-      "prs": [],
+      "prs": [
+        59
+      ],
       "dependsOn": [
         "LM-050",
         "LM-057",
@@ -1195,10 +1258,27 @@
       "source": {
         "path": "docs/source/ORIGINAL_SPECIFICATION.md",
         "heading": "LM 060 Production acceptance and operational handoff"
-      }
+      },
+      "contributingPrs": [
+        59
+      ]
     }
   ],
   "pullRequests": [
+    {
+      "id": 5317532228,
+      "number": 59,
+      "title": "LM-031: Complete integration of LM-030–LM-060 (public explorer, authoring, publication, operations)",
+      "state": "open",
+      "url": "https://github.com/neophilism/Law-Machine/pull/59",
+      "createdAt": "2026-11-14T23:49:20Z",
+      "updatedAt": "2026-11-14T23:49:20Z",
+      "closedAt": null,
+      "mergedAt": null,
+      "draft": false,
+      "headSha": "581d6b2895a9fbb3f45584974aa99baa85c9a575",
+      "baseRef": "main"
+    },
     {
       "id": 4900502515,
       "number": 45,

@@ -12,10 +12,14 @@ if (source === browserSource) throw new Error('Browser harness failed to inline 
 const js = ts.transpileModule(browserSource, {compilerOptions:{
   target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext
 }}).outputText;
-const moduleUrl = 'data:text/javascript;base64,' + Buffer.from(js).toString('base64');
+// Served from an intercepted, test-only same-origin path so the site's strict CSP stays unchanged.
+const moduleUrl = '/__parity/integrity.js';
 
 test('Node and Chromium produce exactly the same canonical JSON and digest',async({page})=>{
-  await page.goto('/');
+  await page.route('**/__parity/**', route => route.request().url().endsWith('.js')
+    ? route.fulfill({ contentType: 'text/javascript', body: js })
+    : route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>parity</title>' }));
+  await page.goto('/__parity/');
   const fixture={z:[3,'c'],a:{b:true,a:null}};
   const fromNode={serialized:canonicalJSON(fixture),digest:await canonicalDigest(fixture),
     rawHash:await sha256Hex(new TextEncoder().encode('raw\r\n'))};

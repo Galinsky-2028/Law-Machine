@@ -7,3 +7,5 @@ export * from './replay.ts';
 export * from './comparison.ts';
 export * from './explanations.ts';
 export * from './worker-protocol.ts';
+export * from './pack-engine.ts';
+export * from './pack-analysis.ts';

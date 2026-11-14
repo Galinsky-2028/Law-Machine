@@ -1,0 +1,2961 @@
+{
+ "format": "law-machine-pack-v1",
+ "packId": "meridian-claims",
+ "title": "Claims and the wrong agency (fictional)",
+ "question": "What happens when a claim goes to the wrong agency?",
+ "summary": "An invented claims regulation and an invented draft bill for the fictional Commonwealth of Meridian. Follow a claim, see who owes which duty, and compare when the claim counts under each framework.",
+ "domain": "institutional-process",
+ "fictional": true,
+ "disclaimers": [
+  "Meridian is fictional. This pack's regulation and draft bill were written for this demonstration and are not real law.",
+  "It does not describe the real electronic-filing bill or any real agency. The real bill pack is unavailable until its authentic text and dated official baseline sources are supplied.",
+  "Nothing here is legal advice or a calculation of anyone's real deadline."
+ ],
+ "releaseLabel": "2026.11.0",
+ "releasedAt": "2026-11-14",
+ "sources": [
+  {
+   "id": "regulation-14",
+   "title": "Meridian Claims Regulation Part 14 (fictional)",
+   "kind": "fictional",
+   "file": "sources/regulation-14.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  },
+  {
+   "id": "claims-act",
+   "title": "Meridian Electronic Claims and Receipt Act (fictional draft)",
+   "kind": "fictional",
+   "file": "sources/claims-act-draft.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  }
+ ],
+ "actors": [
+  {
+   "id": "claimant",
+   "name": "Claimant",
+   "kind": "person",
+   "description": "A hypothetical person with a claim for money damages."
+  },
+  {
+   "id": "intake-system",
+   "name": "Intake system",
+   "kind": "organization",
+   "description": "The shared electronic intake system the draft would create.",
+   "group": "commonwealth"
+  },
+  {
+   "id": "dept-roads",
+   "name": "Department of Roads",
+   "kind": "agency",
+   "description": "A fictional agency that is not responsible for the incident.",
+   "group": "commonwealth"
+  },
+  {
+   "id": "dept-parks",
+   "name": "Department of Parks",
+   "kind": "agency",
+   "description": "The fictional agency responsible for the incident.",
+   "group": "commonwealth"
+  },
+  {
+   "id": "claims-commission",
+   "name": "Claims Commission",
+   "kind": "agency",
+   "description": "A fictional oversight body that runs the intake system and receives complaints.",
+   "group": "oversight"
+  }
+ ],
+ "facts": [
+  {
+   "id": "responsibleAgencyReceived",
+   "type": "boolean",
+   "label": "The claim was first sent to the responsible agency",
+   "description": "True when the first receiving agency is the Department of Parks."
+  },
+  {
+   "id": "statesSumCertain",
+   "type": "boolean",
+   "label": "The claim states a sum certain",
+   "description": "The claim states a specific dollar amount."
+  },
+  {
+   "id": "amountCured",
+   "type": "boolean",
+   "label": "The missing amount has been cured",
+   "description": "Set by the model when a missing amount is supplied in time."
+  },
+  {
+   "id": "cureWithin30Days",
+   "type": "boolean",
+   "label": "The amount was supplied within 30 days of the notice",
+   "description": "Whether the claimant met the 30-day cure window in the draft."
+  },
+  {
+   "id": "finalDispositionMade",
+   "type": "boolean",
+   "label": "The agency made a final disposition in time",
+   "description": "Whether the agency decided the claim before six months passed."
+  }
+ ],
+ "calendars": [
+  {
+   "id": "meridian-civil",
+   "version": "2027.1",
+   "timeZone": "UTC",
+   "weekendDays": [
+    0,
+    6
+   ],
+   "observedHolidays": [
+    "2027-01-01",
+    "2027-03-15",
+    "2027-05-31",
+    "2027-07-05",
+    "2027-09-06",
+    "2027-11-25",
+    "2027-12-24"
+   ],
+   "basis": "Assumption for this fictional jurisdiction: business days are Monday to Friday, excluding the listed invented holidays (Founders Day is 15 March)."
+  }
+ ],
+ "deadlines": [
+  {
+   "id": "act-two-business-days",
+   "label": "2 business days after receipt",
+   "calendarId": "meridian-civil",
+   "amount": 2,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "4(a)",
+     "quote": "within 2 business days after the receipt time"
+    }
+   ]
+  },
+  {
+   "id": "act-fifteen-business-days",
+   "label": "15 business days after receipt",
+   "calendarId": "meridian-civil",
+   "amount": 15,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "5(a)",
+     "quote": "within 15 business days after the receipt time"
+    }
+   ]
+  },
+  {
+   "id": "act-six-months",
+   "label": "Six months after presentment",
+   "calendarId": "meridian-civil",
+   "amount": 6,
+   "unit": "calendar-month",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "keep",
+   "sourceRefs": [
+    {
+     "provision": "6(a)",
+     "quote": "within six months after it is presented"
+    }
+   ],
+   "interpretationId": "month-end-clamp"
+  },
+  {
+   "id": "reg-six-months",
+   "label": "Six months after presentment",
+   "calendarId": "meridian-civil",
+   "amount": 6,
+   "unit": "calendar-month",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "keep",
+   "sourceRefs": [
+    {
+     "provision": "14.3(a)",
+     "quote": "within six months after it is presented",
+     "source": "regulation-14"
+    }
+   ],
+   "interpretationId": "month-end-clamp"
+  }
+ ],
+ "frameworks": [
+  {
+   "id": "baseline",
+   "label": "Current regulation (fictional, as of 1 Jan 2027)",
+   "role": "baseline",
+   "billId": "meridian-reg-14",
+   "version": "2027-01-01",
+   "versionId": "meridian-reg-14-2027",
+   "status": "enacted",
+   "jurisdiction": "meridian",
+   "agency": "meridian-agencies",
+   "asOf": "2027-01-01",
+   "sourceId": "regulation-14",
+   "rules": [
+    {
+     "id": "reg-presentment-direct",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "14.2(a)",
+       "quote": "A claim is presented when the responsible agency receives written notice of the incident accompanied by a claim for money damages in a sum certain."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "statesSumCertain"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "presentment-direct",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "The responsible agency received a claim stating a sum certain, so the claim is presented.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "reg-return-missing-amount",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "14.4(a)",
+       "quote": "shall return the claim to the claimant with a statement that the amount is missing"
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "not",
+        "arg": {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "statesSumCertain"
+         }
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "dept-parks",
+     "explanationKey": "return-missing-amount",
+     "effect": {
+      "action": "return-deficient-claim",
+      "deadlineId": null,
+      "onPerformEmits": "deficiency-notice-sent",
+      "checkpoint": "deficiency-notice",
+      "summary": "The agency must return a claim that lacks a sum certain. The regulation states no deadline.",
+      "kind": "create-obligation"
+     },
+     "after": [
+      "reg-presentment-direct"
+     ]
+    },
+    {
+     "id": "reg-transfer-duty",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "14.2(b)",
+       "quote": "shall transfer the claim to the responsible agency, if that agency can be identified"
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "not",
+      "arg": {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "responsibleAgencyReceived"
+       }
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "dept-roads",
+     "explanationKey": "transfer-duty",
+     "effect": {
+      "action": "transfer-claim",
+      "deadlineId": null,
+      "onPerformEmits": "claim-transferred",
+      "checkpoint": "routing",
+      "summary": "The wrong agency must transfer the claim. The regulation states no deadline.",
+      "kind": "create-obligation"
+     }
+    },
+    {
+     "id": "reg-presentment-on-transfer",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "14.2(c)",
+       "quote": "A claim transferred under paragraph (b) is presented when the responsible agency receives it."
+      }
+     ],
+     "trigger": "claim-transferred",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "statesSumCertain"
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "presentment-on-transfer",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "A transferred claim is presented only when the responsible agency receives it.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "reg-presentment-on-amount",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "14.4(b)",
+       "quote": "is presented when the responsible agency receives a claim that states a sum certain"
+      }
+     ],
+     "trigger": "amount-supplied",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "responsibleAgencyReceived"
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "presentment-on-amount",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "setFacts": {
+       "amountCured": true
+      },
+      "summary": "The claim is presented when the responsible agency receives a claim that states a sum certain.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "reg-disposition-clock",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "14.3(a)",
+       "quote": "within six months after it is presented"
+      }
+     ],
+     "trigger": "presented",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "schedule",
+     "actorId": "dept-parks",
+     "explanationKey": "disposition-clock",
+     "effect": {
+      "deadlineId": "reg-six-months",
+      "emits": "disposition-period-ended",
+      "checkpoint": "disposition-clock",
+      "summary": "The six-month disposition period starts at presentment.",
+      "kind": "schedule"
+     }
+    },
+    {
+     "id": "reg-deemed-denial",
+     "modal": "permission",
+     "sourceRefs": [
+      {
+       "provision": "14.3(a)",
+       "quote": "the claimant may treat the failure as a final denial"
+      }
+     ],
+     "trigger": "disposition-period-ended",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "finalDispositionMade"
+       }
+      }
+     ],
+     "operation": "record",
+     "actorId": "claimant",
+     "explanationKey": "deemed-denial",
+     "effect": {
+      "checkpoint": "deemed-denial",
+      "status": {
+       "force": "permission",
+       "holderId": "claimant",
+       "action": "treat-as-denied"
+      },
+      "summary": "With no final disposition after six months, the claimant may treat the claim as denied.",
+      "kind": "record",
+      "exceptions": [
+       {
+        "id": "final-disposition-made",
+        "label": "The agency made a final disposition before the period ended",
+        "sourceRefs": [
+         {
+          "provision": "14.3(a)",
+          "quote": "does not make final disposition of a presented claim"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "reg-mailed-claim",
+     "modal": "power",
+     "sourceRefs": [
+      {
+       "provision": "14.2(a)",
+       "quote": "when the responsible agency receives written notice"
+      }
+     ],
+     "trigger": "submitted-alternative-means",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "route",
+     "actorId": "claimant",
+     "explanationKey": "mailed-claim",
+     "effect": {
+      "to": "dept-parks",
+      "emits": "claim-delivered",
+      "transitAction": "postal-delivery",
+      "checkpoint": "mail-transit",
+      "summary": "Without an electronic system, a paper claim counts only when it reaches the responsible agency.",
+      "kind": "route"
+     }
+    },
+    {
+     "id": "reg-presentment-on-delivery",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "14.2(a)",
+       "quote": "A claim is presented when the responsible agency receives written notice of the incident accompanied by a claim for money damages in a sum certain."
+      }
+     ],
+     "trigger": "claim-delivered",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "statesSumCertain"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "presentment-on-delivery",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "The mailed claim is presented when the responsible agency receives it.",
+      "kind": "record"
+     }
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-meridian-claims-regulation-part-14-fictional",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.1(a)",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.2(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "14.2(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "14.2(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "14.3",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.3(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "14.4",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "14.4(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "14.4(b)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "id": "proposal",
+   "label": "Draft Act (fictional)",
+   "role": "proposal",
+   "billId": "meridian-claims-act",
+   "version": "Discussion draft 1",
+   "versionId": "meridian-act-draft-1",
+   "status": "draft",
+   "jurisdiction": "meridian",
+   "agency": "meridian-agencies",
+   "asOf": "2027-01-01",
+   "sourceId": "claims-act",
+   "rules": [
+    {
+     "id": "act-receipt-time",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "A submission is received at its receipt time, whether or not an employee has read it."
+      },
+      {
+       "provision": "2(b)",
+       "quote": "\"Receipt time\" means the time at which a submission first enters an intake system."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "intake-system",
+     "explanationKey": "receipt-time",
+     "effect": {
+      "checkpoint": "receipt",
+      "summary": "The submission is received when it enters the intake system, whether or not anyone has read it.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record"
+     }
+    },
+    {
+     "id": "act-presentment-direct",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "3(c)",
+       "quote": "A claim is presented when it has been received by the responsible agency and states a sum certain."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "statesSumCertain"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "act-presentment-direct",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "The responsible agency received a claim stating a sum certain, so it is presented at the receipt time.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record"
+     },
+     "after": [
+      "act-receipt-time"
+     ]
+    },
+    {
+     "id": "act-missing-amount-notice",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "5(a)",
+       "quote": "the responsible agency shall notify the claimant of the omission within 15 business days after the receipt time"
+      },
+      {
+       "provision": "8(b)",
+       "quote": "Section 5 takes effect 180 days after enactment."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "not",
+        "arg": {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "statesSumCertain"
+         }
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "dept-parks",
+     "explanationKey": "act-missing-amount-notice",
+     "effect": {
+      "action": "return-deficient-claim",
+      "deadlineId": "act-fifteen-business-days",
+      "onPerformEmits": "deficiency-notice-sent",
+      "onBreachEmits": "deficiency-notice-late",
+      "checkpoint": "deficiency-notice",
+      "summary": "The agency must tell the claimant the amount is missing within 15 business days.",
+      "effectiveAfterEnactmentDays": 180,
+      "kind": "create-obligation"
+     },
+     "after": [
+      "act-presentment-direct"
+     ]
+    },
+    {
+     "id": "act-routing-duty",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "4(a)",
+       "quote": "shall route the claim to the responsible agency within 2 business days after the receipt time"
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "not",
+      "arg": {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "responsibleAgencyReceived"
+       }
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "dept-roads",
+     "explanationKey": "routing-duty",
+     "effect": {
+      "action": "transfer-claim",
+      "deadlineId": "act-two-business-days",
+      "onPerformEmits": "claim-transferred",
+      "onBreachEmits": "routing-deadline-missed",
+      "checkpoint": "routing",
+      "summary": "The wrong agency must route the claim within 2 business days.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "create-obligation"
+     },
+     "after": [
+      "act-preserved-receipt"
+     ]
+    },
+    {
+     "id": "act-preserved-receipt",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "4(b)",
+       "quote": "is treated as received by the responsible agency at the receipt time of the original submission"
+      },
+      {
+       "provision": "3(c)",
+       "quote": "A claim is presented when it has been received by the responsible agency and states a sum certain."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "claim-submitted",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "not",
+        "arg": {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "responsibleAgencyReceived"
+         }
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "statesSumCertain"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "preserved-receipt",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "The claim is treated as received by the responsible agency at the original receipt time, so it is presented then.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record"
+     },
+     "after": [
+      "act-missing-amount-notice"
+     ]
+    },
+    {
+     "id": "act-routing-complaint",
+     "modal": "permission",
+     "sourceRefs": [
+      {
+       "provision": "4(d)",
+       "quote": "A claimant may file a complaint with the Claims Commission"
+      },
+      {
+       "provision": "4(c)",
+       "quote": "does not change the receipt time preserved by subsection (b)"
+      }
+     ],
+     "trigger": "routing-deadline-missed",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "claimant",
+     "explanationKey": "routing-complaint",
+     "effect": {
+      "checkpoint": "routing-complaint",
+      "status": {
+       "force": "permission",
+       "holderId": "claimant",
+       "action": "complain-to-commission"
+      },
+      "summary": "The missed routing duty lets the claimant complain to the Claims Commission. The preserved receipt time does not change.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "act-cure",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "5(b)",
+       "quote": "A claimant who supplies the missing amount within 30 days after the notice cures the omission"
+      },
+      {
+       "provision": "8(b)",
+       "quote": "Section 5 takes effect 180 days after enactment."
+      }
+     ],
+     "trigger": "amount-supplied",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "cureWithin30Days"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "cure",
+     "effect": {
+      "checkpoint": "cure",
+      "setFacts": {
+       "amountCured": true
+      },
+      "summary": "The missing amount arrived within 30 days after the notice, so the omission is cured.",
+      "effectiveAfterEnactmentDays": 180,
+      "kind": "record"
+     }
+    },
+    {
+     "id": "act-presentment-on-amount",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "3(c)",
+       "quote": "A claim is presented when it has been received by the responsible agency and states a sum certain."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "amount-supplied",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "fact-value",
+       "key": "responsibleAgencyReceived"
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "act-presentment-on-amount",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "Once the claim states a sum certain, it is presented.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record"
+     },
+     "after": [
+      "act-cure"
+     ]
+    },
+    {
+     "id": "act-clock-relation-back",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "5(b)",
+       "quote": "the cured claim relates back to the original receipt time"
+      },
+      {
+       "provision": "8(b)",
+       "quote": "Section 5 takes effect 180 days after enactment."
+      }
+     ],
+     "trigger": "amount-supplied",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "cureWithin30Days"
+        }
+       },
+       {
+        "op": "eq",
+        "left": {
+         "op": "fact-value",
+         "key": "interp.disposition-start"
+        },
+        "right": {
+         "op": "literal",
+         "value": "relation-back"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "schedule",
+     "actorId": "dept-parks",
+     "explanationKey": "clock-relation-back",
+     "effect": {
+      "deadlineId": "act-six-months",
+      "emits": "disposition-period-ended",
+      "anchorEvent": "claim-submitted",
+      "checkpoint": "disposition-clock",
+      "summary": "Reading A: the cured claim relates back, so the six-month period runs from the original receipt time.",
+      "effectiveAfterEnactmentDays": 180,
+      "kind": "schedule"
+     },
+     "after": [
+      "act-presentment-on-amount"
+     ]
+    },
+    {
+     "id": "act-disposition-clock",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "6(a)",
+       "quote": "within six months after it is presented"
+      },
+      {
+       "provision": "5(c)",
+       "quote": "The six-month disposition period begins when the claim states a sum certain."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "presented",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [
+      {
+       "op": "and",
+       "terms": [
+        {
+         "op": "eq",
+         "left": {
+          "op": "fact-value",
+          "key": "interp.disposition-start"
+         },
+         "right": {
+          "op": "literal",
+          "value": "relation-back"
+         }
+        },
+        {
+         "op": "truth",
+         "value": {
+          "op": "fact-value",
+          "key": "amountCured"
+         }
+        }
+       ]
+      }
+     ],
+     "operation": "schedule",
+     "actorId": "dept-parks",
+     "explanationKey": "act-disposition-clock",
+     "effect": {
+      "deadlineId": "act-six-months",
+      "emits": "disposition-period-ended",
+      "checkpoint": "disposition-clock",
+      "summary": "The six-month disposition period starts when the claim is presented with a sum certain.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "schedule",
+      "exceptions": [
+       {
+        "id": "relation-back-reading",
+        "label": "Under reading A the period already runs from the original receipt time",
+        "sourceRefs": [
+         {
+          "provision": "5(b)",
+          "quote": "the cured claim relates back to the original receipt time"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "act-deemed-denial",
+     "modal": "permission",
+     "sourceRefs": [
+      {
+       "provision": "6(a)",
+       "quote": "the claimant may treat the failure as a final denial"
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "disposition-period-ended",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [
+      {
+       "op": "truth",
+       "value": {
+        "op": "fact-value",
+        "key": "finalDispositionMade"
+       }
+      }
+     ],
+     "operation": "record",
+     "actorId": "claimant",
+     "explanationKey": "act-deemed-denial",
+     "effect": {
+      "checkpoint": "deemed-denial",
+      "status": {
+       "force": "permission",
+       "holderId": "claimant",
+       "action": "treat-as-denied"
+      },
+      "summary": "With no final disposition after six months, the claimant may treat the claim as denied.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record",
+      "exceptions": [
+       {
+        "id": "final-disposition-made",
+        "label": "The agency made a final disposition before the period ended",
+        "sourceRefs": [
+         {
+          "provision": "6(a)",
+          "quote": "does not make final disposition of a presented claim"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "act-alternative-means",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "7(a)",
+       "quote": "the Claims Commission shall provide an alternative means of submission"
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "intake-outage",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "claims-commission",
+     "explanationKey": "alternative-means",
+     "effect": {
+      "action": "provide-alternative-means",
+      "deadlineId": null,
+      "onPerformEmits": "alternative-means-available",
+      "checkpoint": "alternative-means",
+      "summary": "During an outage the Claims Commission must provide another way to submit. The draft states no time limit.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "create-obligation"
+     }
+    },
+    {
+     "id": "act-alternative-receipt",
+     "modal": "right",
+     "sourceRefs": [
+      {
+       "provision": "7(b)",
+       "quote": "is received when the alternative means accepts it"
+      },
+      {
+       "provision": "3(c)",
+       "quote": "A claim is presented when it has been received by the responsible agency and states a sum certain."
+      },
+      {
+       "provision": "8(a)",
+       "quote": "Sections 2, 3, 4, 6 and 7 take effect 30 days after enactment."
+      }
+     ],
+     "trigger": "submitted-alternative-means",
+     "when": {
+      "op": "and",
+      "terms": [
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "responsibleAgencyReceived"
+        }
+       },
+       {
+        "op": "truth",
+        "value": {
+         "op": "fact-value",
+         "key": "statesSumCertain"
+        }
+       }
+      ]
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "dept-parks",
+     "explanationKey": "alternative-receipt",
+     "effect": {
+      "emits": "presented",
+      "checkpoint": "presentment",
+      "summary": "A submission through the alternative means is received when that means accepts it.",
+      "effectiveAfterEnactmentDays": 30,
+      "kind": "record"
+     }
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-meridian-electronic-claims-and-receipt-act-fictional-draft",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(a)",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(a)",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "3(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3(b)",
+     "mode": "ambiguous",
+     "reason": "\"Ordinarily\" sets a qualified target, not an unconditional guarantee. It is shown as explanation and is not modeled as a duty."
+    },
+    {
+     "provision": "3(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "4(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "4(d)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "5",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "5(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "5(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "5(c)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "6",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "6(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "7",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "7(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "7(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "8",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "8(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "8(b)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  }
+ ],
+ "interpretations": [
+  {
+   "id": "disposition-start",
+   "question": "After a missing amount is cured, does the six-month disposition period run from the original receipt time or from when the amount is supplied?",
+   "alternatives": [
+    {
+     "id": "relation-back",
+     "label": "A: from the original receipt time",
+     "description": "Section 5(b) says the cured claim relates back to the original receipt time, so the period counts from then.",
+     "frameworkId": "proposal",
+     "sourceRefs": [
+      {
+       "provision": "5(b)",
+       "quote": "the cured claim relates back to the original receipt time"
+      }
+     ]
+    },
+    {
+     "id": "amount-supplied",
+     "label": "B: from when the amount is supplied",
+     "description": "Section 5(c) says the period begins when the claim states a sum certain, so it counts from the cure.",
+     "frameworkId": "proposal",
+     "sourceRefs": [
+      {
+       "provision": "5(c)",
+       "quote": "The six-month disposition period begins when the claim states a sum certain."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "assumptions": [
+  {
+   "id": "transfer-delay-assumed",
+   "label": "Wrong-agency forwarding time",
+   "description": "How many business days the wrong agency takes to forward the claim. This is behavior, not law.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only; no real agency data."
+   ]
+  },
+  {
+   "id": "notice-delay-assumed",
+   "label": "Missing-amount notice time",
+   "description": "How many business days the agency takes to send the missing-amount notice.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "postal-transit-assumed",
+   "label": "Postal transit time",
+   "description": "A mailed claim arrives three business days after mailing.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "alternative-means-same-day",
+   "label": "Alternative means offered the same day",
+   "description": "The Commission offers an alternative submission method on the day of the outage.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "routing-queue-illustrative",
+   "label": "Illustrative routing workload",
+   "description": "A simple queue: claims arrive each business day and a fixed staff routes a fixed amount of work per day.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Not based on any measured workload.",
+    "Used only in the stress view."
+   ]
+  },
+  {
+   "id": "business-days-assumed",
+   "label": "Meridian business days",
+   "description": "Business days are Monday to Friday excluding listed invented holidays.",
+   "classification": "interpretation",
+   "limitations": [
+    "Meridian is fictional; the holiday list is invented."
+   ]
+  },
+  {
+   "id": "month-end-clamp",
+   "label": "Six months at month end",
+   "description": "When the start day does not exist six months later, the period ends on the last day of that month.",
+   "classification": "interpretation",
+   "limitations": [
+    "The fictional texts do not state a month-end convention."
+   ]
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "complete-responsible",
+   "title": "Complete claim to the responsible agency",
+   "question": "What happens when a complete claim reaches the right agency?",
+   "summary": "A claimant sends a complete claim, with a dollar amount, to the Department of Parks, which is responsible for the incident. Both frameworks present the claim on the same day and start the same six-month period.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": true,
+    "statesSumCertain": true,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits a complete claim through the intake system"
+    }
+   ],
+   "behaviors": [],
+   "parameters": [
+    {
+     "id": "sum-certain",
+     "label": "Claim states a sum certain",
+     "help": "Whether the claim states a specific dollar amount.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "statesSumCertain"
+     }
+    },
+    {
+     "id": "final-disposition",
+     "label": "Agency decides within six months",
+     "help": "If the agency makes a final disposition in time, the deemed-denial option does not arise.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "finalDispositionMade"
+     }
+    },
+    {
+     "id": "enactment",
+     "label": "Days between assumed enactment and the claim",
+     "help": "Negative numbers mean the Act was assumed enacted that many days before the claim. Sections take effect 30 and 180 days after enactment.",
+     "control": "integer",
+     "min": -400,
+     "max": 0,
+     "unit": "days",
+     "target": {
+      "kind": "enactment-offset"
+     }
+    }
+   ],
+   "assumptions": [
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "Receipt and presentment are different legal ideas.",
+    "A receipt is not a decision about whether the claim succeeds."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 14.2(a): the responsible agency received a claim with a sum certain on the submission day.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "§ 14.3(a): six calendar months after 1 March 2027 ends on 1 September 2027.",
+      "dueDate": "2027-09-01"
+     },
+     {
+      "checkpoint": "deemed-denial",
+      "present": true,
+      "reasoning": "No final disposition is assumed, so the option arises the day after the period ends.",
+      "eventDate": "2027-09-02"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "receipt",
+      "present": true,
+      "reasoning": "§ 3(a): received when it entered the intake system.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 3(c): received by the responsible agency with a sum certain.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "§ 6(a): six months from 1 March 2027.",
+      "dueDate": "2027-09-01"
+     }
+    ]
+   }
+  },
+  {
+   "id": "wrong-agency",
+   "title": "Complete claim sent to the wrong agency",
+   "question": "What happens when a claim goes to the wrong agency?",
+   "summary": "The claimant addresses a complete claim to the Department of Roads, but the Department of Parks is responsible. Roads forwards it one business day later. The baseline counts presentment from when Parks gets it. The draft keeps the original receipt time and gives Roads a two-business-day routing duty.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": false,
+    "statesSumCertain": true,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits the claim, addressed to the Department of Roads, through the intake system"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "transfer-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 1,
+      "unit": "business-day"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "transfer-delay",
+     "label": "Days the wrong agency takes to forward the claim",
+     "help": "An operational assumption. It changes behavior only; the legal duty stays the same.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "transfer-claim"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    },
+    {
+     "id": "responsible",
+     "label": "Sent to the responsible agency?",
+     "help": "Yes, no, or unknown. Unknown keeps routing questions open.",
+     "control": "tristate",
+     "target": {
+      "kind": "fact",
+      "factId": "responsibleAgencyReceived"
+     }
+    },
+    {
+     "id": "sum-certain",
+     "label": "Claim states a sum certain",
+     "help": "Whether the claim states a specific dollar amount.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "statesSumCertain"
+     }
+    },
+    {
+     "id": "final-disposition",
+     "label": "Agency decides within six months",
+     "help": "If the agency makes a final disposition in time, the deemed-denial option does not arise.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "finalDispositionMade"
+     }
+    },
+    {
+     "id": "enactment",
+     "label": "Days between assumed enactment and the claim",
+     "help": "Negative numbers mean the Act was assumed enacted that many days before the claim. Sections take effect 30 and 180 days after enactment.",
+     "control": "integer",
+     "min": -400,
+     "max": 0,
+     "unit": "days",
+     "target": {
+      "kind": "enactment-offset"
+     }
+    }
+   ],
+   "assumptions": [
+    "transfer-delay-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "The draft preserves the original receipt time.",
+    "A routing duty is a legal requirement; when the agency actually forwards the claim is a separate assumption."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "§ 14.2(b) imposes a transfer duty with no stated deadline; it is satisfied when performed.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 14.2(c): presented when Parks receives it, one business day later on 2 March 2027.",
+      "eventDate": "2027-03-02"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "Six months from 2 March 2027.",
+      "dueDate": "2027-09-02"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "§ 4(a): two business days after Monday 1 March is Wednesday 3 March; forwarding on 2 March is on time.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-03-03",
+      "eventDate": "2027-03-02"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 4(b) preserves the original receipt time, so presentment is 1 March 2027.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "Six months from 1 March 2027.",
+      "dueDate": "2027-09-01"
+     },
+     {
+      "checkpoint": "routing-complaint",
+      "present": false,
+      "reasoning": "No routing breach, so no complaint permission arises."
+     }
+    ]
+   },
+   "workload": {
+    "action": "transfer-claim",
+    "arrivalsPerDay": 6,
+    "workers": 1,
+    "unitsPerWorkerDay": 8,
+    "unitsPerItem": 2,
+    "outageDays": [],
+    "assumptionId": "routing-queue-illustrative",
+    "sourceKind": "assumption"
+   },
+   "tour": [
+    {
+     "focus": {
+      "kind": "actor",
+      "id": "dept-roads"
+     },
+     "title": "The claim goes to the wrong agency",
+     "body": "The claimant addresses the claim to the Department of Roads. The Department of Parks is actually responsible."
+    },
+    {
+     "focus": {
+      "kind": "rule",
+      "frameworkId": "proposal",
+      "id": "act-routing-duty"
+     },
+     "title": "A two-day routing duty",
+     "body": "Under the draft, Roads must route the claim within 2 business days. This is a duty, not a promise that Roads will comply."
+    },
+    {
+     "focus": {
+      "kind": "provision",
+      "versionId": "meridian-act-draft-1",
+      "id": "s4.b"
+     },
+     "title": "The receipt time is preserved",
+     "body": "Section 4(b) treats the claim as received by Parks at the original receipt time."
+    },
+    {
+     "focus": {
+      "kind": "checkpoint",
+      "id": "presentment"
+     },
+     "title": "Why the date changes",
+     "body": "Under the baseline, presentment waits until Parks receives the claim. Under the draft it stays on the submission day. Compare the two frameworks to see the difference."
+    }
+   ]
+  },
+  {
+   "id": "missed-routing",
+   "title": "Wrong agency misses the routing duty",
+   "question": "What if the wrong agency takes five business days to forward the claim?",
+   "summary": "Same claim, but Roads takes five business days. Under the draft the routing duty is breached and the claimant may complain, yet the preserved receipt time does not change. Under the baseline there is no deadline to breach, and presentment simply happens later.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": false,
+    "statesSumCertain": true,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits the claim, addressed to the Department of Roads, through the intake system"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "transfer-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 5,
+      "unit": "business-day"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "transfer-delay",
+     "label": "Days the wrong agency takes to forward the claim",
+     "help": "An operational assumption. It changes behavior only; the legal duty stays the same.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "transfer-claim"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    },
+    {
+     "id": "final-disposition",
+     "label": "Agency decides within six months",
+     "help": "If the agency makes a final disposition in time, the deemed-denial option does not arise.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "finalDispositionMade"
+     }
+    },
+    {
+     "id": "enactment",
+     "label": "Days between assumed enactment and the claim",
+     "help": "Negative numbers mean the Act was assumed enacted that many days before the claim. Sections take effect 30 and 180 days after enactment.",
+     "control": "integer",
+     "min": -400,
+     "max": 0,
+     "unit": "days",
+     "target": {
+      "kind": "enactment-offset"
+     }
+    }
+   ],
+   "assumptions": [
+    "transfer-delay-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "A missed duty is recorded as a breach, but does not move the protected date.",
+    "A remedy needs its own rule; here the draft only permits a complaint."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "No deadline in § 14.2(b), so late forwarding is not a breach.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "Presented when Parks receives it on 8 March 2027.",
+      "eventDate": "2027-03-08"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "Due 3 March 2027; forwarded 8 March 2027, so the duty is breached.",
+      "dutyState": "breached",
+      "dueDate": "2027-03-03"
+     },
+     {
+      "checkpoint": "routing-complaint",
+      "present": true,
+      "reasoning": "§ 4(d): the missed routing period permits a complaint. It arises the day after the due date.",
+      "eventDate": "2027-03-04"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 4(c): the breach does not change the preserved receipt time.",
+      "eventDate": "2027-03-01"
+     }
+    ]
+   },
+   "workload": {
+    "action": "transfer-claim",
+    "arrivalsPerDay": 6,
+    "workers": 1,
+    "unitsPerWorkerDay": 8,
+    "unitsPerItem": 2,
+    "outageDays": [],
+    "assumptionId": "routing-queue-illustrative",
+    "sourceKind": "assumption"
+   }
+  },
+  {
+   "id": "missing-amount",
+   "title": "Claim without a dollar amount",
+   "question": "What happens when a claim omits the dollar amount?",
+   "summary": "The claim reaches the right agency but states no sum certain. The agency sends a notice after five business days and the claimant supplies the amount two weeks after filing. The draft does not clearly say whether the six-month period then runs from the original receipt time or from the cure, so this model leaves that unresolved until you choose a reading.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": true,
+    "statesSumCertain": false,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits a claim that states no dollar amount"
+    },
+    {
+     "id": "cure",
+     "day": 14,
+     "kind": "amount-supplied",
+     "actorId": "claimant",
+     "label": "The claimant supplies the missing amount"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "return-deficient-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 5,
+      "unit": "business-day"
+     },
+     "assumptionId": "notice-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "reading",
+     "label": "Reading of § 5(b) and § 5(c)",
+     "help": "The draft does not settle when the six-month period starts after a cure. Choose a reading or leave it unresolved.",
+     "control": "choice",
+     "options": [
+      {
+       "value": "relation-back",
+       "label": "A: relates back to original receipt"
+      },
+      {
+       "value": "amount-supplied",
+       "label": "B: starts when the amount is supplied"
+      }
+     ],
+     "target": {
+      "kind": "interpretation",
+      "interpretationId": "disposition-start"
+     }
+    },
+    {
+     "id": "notice-delay",
+     "label": "Days the agency takes to send the missing-amount notice",
+     "help": "An operational assumption about agency behavior.",
+     "control": "integer",
+     "min": 0,
+     "max": 40,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "return-deficient-claim"
+     },
+     "assumptionId": "notice-delay-assumed"
+    },
+    {
+     "id": "cure-on-time",
+     "label": "Amount supplied within 30 days of notice",
+     "help": "Whether the claimant cured the omission in time under § 5(b).",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "cureWithin30Days"
+     }
+    },
+    {
+     "id": "final-disposition",
+     "label": "Agency decides within six months",
+     "help": "If the agency makes a final disposition in time, the deemed-denial option does not arise.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "finalDispositionMade"
+     }
+    }
+   ],
+   "assumptions": [
+    "notice-delay-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [
+    "Whether a cured claim's six-month period runs from original receipt (§ 5(b)) or from the cure (§ 5(c))."
+   ],
+   "learn": [
+    "Missing information does not quietly become a \"no\".",
+    "When two provisions conflict, the model shows the conflict instead of picking the favorable answer."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "deficiency-notice",
+      "present": true,
+      "reasoning": "§ 14.4(a) requires returning the claim but states no deadline.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 14.4(b): presented when the amount arrives on 15 March 2027.",
+      "eventDate": "2027-03-15"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "Six months from 15 March 2027.",
+      "dueDate": "2027-09-15"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "deficiency-notice",
+      "present": true,
+      "reasoning": "15 business days from 1 March, skipping the fictional 15 March holiday, ends 23 March 2027; the notice went out 8 March.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-03-23"
+     },
+     {
+      "checkpoint": "cure",
+      "present": true,
+      "reasoning": "§ 5(b): the amount came within 30 days of the notice.",
+      "eventDate": "2027-03-15"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "§ 5(b) and § 5(c) point in different directions and no reading is chosen, so the period stays unresolved.",
+      "dutyState": "unknown"
+     }
+    ]
+   }
+  },
+  {
+   "id": "late-deficiency-notice",
+   "title": "Agency misses the missing-amount notice period",
+   "question": "What if the agency takes 20 business days to send the missing-amount notice?",
+   "summary": "The agency waits 20 business days before telling the claimant the amount is missing. The draft's 15-business-day notice duty is breached. Here the reading that the period starts when the amount is supplied has been selected for illustration.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": true,
+    "statesSumCertain": false,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {
+    "disposition-start": "amount-supplied"
+   },
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits a claim that states no dollar amount"
+    },
+    {
+     "id": "cure",
+     "day": 35,
+     "kind": "amount-supplied",
+     "actorId": "claimant",
+     "label": "The claimant supplies the missing amount"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "return-deficient-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 20,
+      "unit": "business-day"
+     },
+     "assumptionId": "notice-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "notice-delay",
+     "label": "Days the agency takes to send the missing-amount notice",
+     "help": "An operational assumption about agency behavior.",
+     "control": "integer",
+     "min": 0,
+     "max": 40,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "return-deficient-claim"
+     },
+     "assumptionId": "notice-delay-assumed"
+    },
+    {
+     "id": "reading",
+     "label": "Reading of § 5(b) and § 5(c)",
+     "help": "The draft does not settle when the six-month period starts after a cure. Choose a reading or leave it unresolved.",
+     "control": "choice",
+     "options": [
+      {
+       "value": "relation-back",
+       "label": "A: relates back to original receipt"
+      },
+      {
+       "value": "amount-supplied",
+       "label": "B: starts when the amount is supplied"
+      }
+     ],
+     "target": {
+      "kind": "interpretation",
+      "interpretationId": "disposition-start"
+     }
+    },
+    {
+     "id": "cure-on-time",
+     "label": "Amount supplied within 30 days of notice",
+     "help": "Whether the claimant cured the omission in time under § 5(b).",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "cureWithin30Days"
+     }
+    }
+   ],
+   "assumptions": [
+    "notice-delay-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "A notice duty with a deadline can be breached even when the claim later proceeds."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "deficiency-notice",
+      "present": true,
+      "reasoning": "No deadline in § 14.4(a), so no breach.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "Presented when the amount arrives on 5 April 2027.",
+      "eventDate": "2027-04-05"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "deficiency-notice",
+      "present": true,
+      "reasoning": "Due 23 March 2027; sent 30 March 2027, so the duty is breached.",
+      "dutyState": "breached",
+      "dueDate": "2027-03-23"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "Under reading B the period runs from 5 April 2027.",
+      "dueDate": "2027-10-05"
+     }
+    ]
+   }
+  },
+  {
+   "id": "phased-implementation",
+   "title": "Phased implementation",
+   "question": "Which protections apply before every section takes effect?",
+   "summary": "The Act is assumed enacted 60 days before the claim. Sections 3 and 4 are in effect after 30 days, but section 5 waits 180 days. So the receipt rule applies while the missing-amount notice duty does not yet operate.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -60
+   },
+   "facts": {
+    "responsibleAgencyReceived": true,
+    "statesSumCertain": false,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits a claim that states no dollar amount"
+    },
+    {
+     "id": "cure",
+     "day": 10,
+     "kind": "amount-supplied",
+     "actorId": "claimant",
+     "label": "The claimant supplies the missing amount"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "return-deficient-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 5,
+      "unit": "business-day"
+     },
+     "assumptionId": "notice-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "enactment",
+     "label": "Days between assumed enactment and the claim",
+     "help": "Negative numbers mean the Act was assumed enacted that many days before the claim. Sections take effect 30 and 180 days after enactment.",
+     "control": "integer",
+     "min": -400,
+     "max": 0,
+     "unit": "days",
+     "target": {
+      "kind": "enactment-offset"
+     }
+    },
+    {
+     "id": "notice-delay",
+     "label": "Days the agency takes to send the missing-amount notice",
+     "help": "An operational assumption about agency behavior.",
+     "control": "integer",
+     "min": 0,
+     "max": 40,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "return-deficient-claim"
+     },
+     "assumptionId": "notice-delay-assumed"
+    }
+   ],
+   "assumptions": [
+    "notice-delay-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "A bill can take effect in stages; the model checks each provision's effective date."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "Presented when the amount arrives on 11 March 2027.",
+      "eventDate": "2027-03-11"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "receipt",
+      "present": true,
+      "reasoning": "Section 3 is in effect 60 days after enactment.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "deficiency-notice",
+      "present": false,
+      "reasoning": "Section 5 is not yet in effect, so no notice duty arises."
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 3(c): presented once the amount is supplied.",
+      "eventDate": "2027-03-11"
+     },
+     {
+      "checkpoint": "disposition-clock",
+      "present": true,
+      "reasoning": "Without § 5, the period runs from presentment under § 6(a).",
+      "dueDate": "2027-09-11"
+     }
+    ]
+   }
+  },
+  {
+   "id": "unknown-responsibility",
+   "title": "Unclear which agency is responsible",
+   "question": "What if we do not know whether the claim reached the right agency?",
+   "summary": "The facts do not say whether Roads or Parks is responsible. The model does not guess. Rules that depend on that fact stay unresolved, while rules that do not depend on it still apply.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "statesSumCertain": true,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [
+    {
+     "factId": "responsibleAgencyReceived",
+     "reason": "The scenario does not establish which agency is responsible."
+    }
+   ],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "submit",
+     "day": 0,
+     "kind": "claim-submitted",
+     "actorId": "claimant",
+     "label": "The claimant submits a complete claim; the responsible agency is unclear"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "transfer-claim",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 1,
+      "unit": "business-day"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "responsible",
+     "label": "Sent to the responsible agency?",
+     "help": "Yes, no, or unknown. Unknown keeps routing questions open.",
+     "control": "tristate",
+     "target": {
+      "kind": "fact",
+      "factId": "responsibleAgencyReceived"
+     }
+    },
+    {
+     "id": "transfer-delay",
+     "label": "Days the wrong agency takes to forward the claim",
+     "help": "An operational assumption. It changes behavior only; the legal duty stays the same.",
+     "control": "integer",
+     "min": 0,
+     "max": 30,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "transfer-claim"
+     },
+     "assumptionId": "transfer-delay-assumed"
+    }
+   ],
+   "assumptions": [
+    "transfer-delay-assumed",
+    "business-days-assumed"
+   ],
+   "unresolved": [],
+   "learn": [
+    "Unknown facts stay unknown; they never silently become false."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "Presentment depends on the unknown fact, so it stays unresolved.",
+      "dutyState": "unknown"
+     },
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "Whether a transfer duty arises is unresolved.",
+      "dutyState": "unknown"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "receipt",
+      "present": true,
+      "reasoning": "Receipt does not depend on which agency is responsible.",
+      "eventDate": "2027-03-01"
+     },
+     {
+      "checkpoint": "routing",
+      "present": true,
+      "reasoning": "Whether a routing duty arises is unresolved.",
+      "dutyState": "unknown"
+     }
+    ]
+   }
+  },
+  {
+   "id": "outage",
+   "title": "Intake system outage",
+   "question": "What happens when the electronic intake system is down?",
+   "summary": "The intake system is unavailable. Under the draft, the Claims Commission must offer another way to submit, and a submission that way counts when it is accepted. Under the baseline there is no electronic system, so the claimant mails a paper claim that counts when it arrives three business days later.",
+   "hypothetical": true,
+   "startDate": "2027-03-01",
+   "calendarId": "meridian-civil",
+   "seed": 20270301,
+   "horizonDays": 200,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -400
+   },
+   "facts": {
+    "responsibleAgencyReceived": true,
+    "statesSumCertain": true,
+    "amountCured": false,
+    "cureWithin30Days": true,
+    "finalDispositionMade": false
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "outage",
+     "day": 0,
+     "kind": "intake-outage",
+     "actorId": "intake-system",
+     "label": "The intake system is unavailable"
+    },
+    {
+     "id": "alt",
+     "day": 1,
+     "kind": "submitted-alternative-means",
+     "actorId": "claimant",
+     "label": "The claimant submits through the alternative means (or by mail under the baseline)"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "provide-alternative-means",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 0,
+      "unit": "calendar-day"
+     },
+     "assumptionId": "alternative-means-same-day"
+    },
+    {
+     "action": "postal-delivery",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 3,
+      "unit": "business-day"
+     },
+     "assumptionId": "postal-transit-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "final-disposition",
+     "label": "Agency decides within six months",
+     "help": "If the agency makes a final disposition in time, the deemed-denial option does not arise.",
+     "control": "boolean",
+     "target": {
+      "kind": "fact",
+      "factId": "finalDispositionMade"
+     }
+    }
+   ],
+   "assumptions": [
+    "alternative-means-same-day",
+    "postal-transit-assumed",
+    "business-days-assumed",
+    "month-end-clamp"
+   ],
+   "unresolved": [],
+   "learn": [
+    "An outage duty and a mail delay are different things: one is law, the other is an operational assumption."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "mail-transit",
+      "present": true,
+      "reasoning": "The claim is mailed on 2 March 2027.",
+      "eventDate": "2027-03-02"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "Received three business days later, on 5 March 2027.",
+      "eventDate": "2027-03-05"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "alternative-means",
+      "present": true,
+      "reasoning": "§ 7(a) requires an alternative; it has no stated deadline and is provided the same day.",
+      "dutyState": "satisfied"
+     },
+     {
+      "checkpoint": "presentment",
+      "present": true,
+      "reasoning": "§ 7(b): received when the alternative means accepts it on 2 March 2027.",
+      "eventDate": "2027-03-02"
+     }
+    ]
+   }
+  }
+ ],
+ "scene": {
+  "id": "meridian-map",
+  "title": "Who handles a claim in Meridian",
+  "width": 760,
+  "height": 460,
+  "groups": [
+   {
+    "id": "commonwealth",
+    "label": "Commonwealth agencies"
+   },
+   {
+    "id": "oversight",
+    "label": "Oversight"
+   }
+  ],
+  "nodes": [
+   {
+    "actorId": "claimant",
+    "x": 90,
+    "y": 230,
+    "icon": "person"
+   },
+   {
+    "actorId": "intake-system",
+    "x": 320,
+    "y": 90,
+    "icon": "portal",
+    "group": "commonwealth"
+   },
+   {
+    "actorId": "dept-roads",
+    "x": 320,
+    "y": 330,
+    "icon": "agency",
+    "group": "commonwealth"
+   },
+   {
+    "actorId": "dept-parks",
+    "x": 590,
+    "y": 210,
+    "icon": "agency",
+    "group": "commonwealth"
+   },
+   {
+    "actorId": "claims-commission",
+    "x": 590,
+    "y": 390,
+    "icon": "oversight",
+    "group": "oversight"
+   }
+  ],
+  "edges": [
+   {
+    "id": "submit",
+    "from": "claimant",
+    "to": "intake-system",
+    "kind": "route",
+    "label": "submits",
+    "eventKinds": [
+     "claim-submitted"
+    ]
+   },
+   {
+    "id": "intake-roads",
+    "from": "intake-system",
+    "to": "dept-roads",
+    "kind": "route",
+    "label": "addressed to Roads",
+    "eventKinds": [
+     "claim-submitted"
+    ]
+   },
+   {
+    "id": "intake-parks",
+    "from": "intake-system",
+    "to": "dept-parks",
+    "kind": "route",
+    "label": "addressed to Parks",
+    "eventKinds": [
+     "claim-submitted",
+     "presented"
+    ]
+   },
+   {
+    "id": "transfer",
+    "from": "dept-roads",
+    "to": "dept-parks",
+    "kind": "route",
+    "label": "forwards",
+    "eventKinds": [
+     "claim-transferred",
+     "performed:transfer-claim"
+    ]
+   },
+   {
+    "id": "notice",
+    "from": "dept-parks",
+    "to": "claimant",
+    "kind": "route",
+    "label": "missing-amount notice",
+    "eventKinds": [
+     "deficiency-notice-sent",
+     "performed:return-deficient-claim"
+    ]
+   },
+   {
+    "id": "cure",
+    "from": "claimant",
+    "to": "dept-parks",
+    "kind": "route",
+    "label": "supplies amount",
+    "eventKinds": [
+     "amount-supplied"
+    ]
+   },
+   {
+    "id": "mail",
+    "from": "claimant",
+    "to": "dept-parks",
+    "kind": "route",
+    "label": "mails or uses alternative",
+    "eventKinds": [
+     "submitted-alternative-means",
+     "claim-delivered"
+    ]
+   },
+   {
+    "id": "complaint",
+    "from": "claimant",
+    "to": "claims-commission",
+    "kind": "authority",
+    "label": "may complain",
+    "eventKinds": [
+     "routing-deadline-missed"
+    ]
+   },
+   {
+    "id": "runs",
+    "from": "claims-commission",
+    "to": "intake-system",
+    "kind": "authority",
+    "label": "runs",
+    "eventKinds": [
+     "intake-outage",
+     "alternative-means-available",
+     "performed:provide-alternative-means"
+    ]
+   }
+  ]
+ },
+ "glossary": [
+  {
+   "id": "presentment",
+   "term": "Presentment",
+   "plain": "The moment a claim legally counts as made to the agency.",
+   "detail": "In both fictional texts, a claim is presented when the responsible agency has it and it states a dollar amount. Presentment starts the six-month disposition period.",
+   "aliases": [
+    "presented",
+    "present a claim"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "3(c)",
+     "quote": "A claim is presented when it has been received by the responsible agency and states a sum certain."
+    }
+   ],
+   "related": [
+    "receipt-time",
+    "sum-certain"
+   ]
+  },
+  {
+   "id": "receipt-time",
+   "term": "Receipt time",
+   "plain": "When a submission first enters the intake system.",
+   "detail": "Under the fictional draft, receipt does not wait for an employee to read the submission.",
+   "aliases": [
+    "receipt",
+    "received"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "2(b)",
+     "quote": "\"Receipt time\" means the time at which a submission first enters an intake system."
+    }
+   ],
+   "related": [
+    "presentment"
+   ]
+  },
+  {
+   "id": "routing",
+   "term": "Routing",
+   "plain": "Forwarding a claim from the wrong agency to the right one.",
+   "detail": "The draft gives the wrong agency 2 business days. The baseline requires transfer but states no deadline.",
+   "aliases": [
+    "route",
+    "transfer",
+    "forward",
+    "wrong agency"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "4(a)",
+     "quote": "shall route the claim to the responsible agency within 2 business days after the receipt time"
+    }
+   ],
+   "related": [
+    "presentment"
+   ]
+  },
+  {
+   "id": "sum-certain",
+   "term": "Sum certain",
+   "plain": "A specific dollar amount stated in the claim.",
+   "detail": "Without a sum certain, neither fictional text treats the claim as presented.",
+   "aliases": [
+    "amount",
+    "dollar amount",
+    "missing amount"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "5(a)",
+     "quote": "If a claim does not state a sum certain"
+    }
+   ],
+   "related": [
+    "presentment",
+    "relation-back"
+   ]
+  },
+  {
+   "id": "relation-back",
+   "term": "Relation back",
+   "plain": "Treating a later correction as if it had been made at the original time.",
+   "detail": "Section 5(b) of the fictional draft says a cured claim relates back to the original receipt time. Section 5(c) points the other way for the disposition period, so this model shows both readings.",
+   "aliases": [
+    "cure",
+    "relates back"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "5(b)",
+     "quote": "the cured claim relates back to the original receipt time"
+    }
+   ],
+   "related": [
+    "sum-certain"
+   ]
+  },
+  {
+   "id": "deemed-denial",
+   "term": "Treat as denied",
+   "plain": "An option to act as if the agency said no, once six months pass without a decision.",
+   "detail": "It is a permission for the claimant, not an automatic event and not a judgment on the merits.",
+   "aliases": [
+    "denial",
+    "deemed denial",
+    "six months"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "6(a)",
+     "quote": "the claimant may treat the failure as a final denial"
+    }
+   ],
+   "related": [
+    "presentment"
+   ]
+  },
+  {
+   "id": "business-day",
+   "term": "Business day",
+   "plain": "Monday to Friday, excluding holidays.",
+   "detail": "Meridian's holidays are invented for this demonstration.",
+   "aliases": [
+    "business days",
+    "working day"
+   ],
+   "sourceRefs": [],
+   "related": [
+    "routing"
+   ]
+  }
+ ],
+ "explanations": {
+  "presentment-direct": {
+   "plain": "The claim counts as presented on the day the responsible agency received it with a dollar amount.",
+   "detail": "Section 14.2(a) of the fictional regulation ties presentment to receipt by the responsible agency of a claim in a sum certain."
+  },
+  "return-missing-amount": {
+   "plain": "The agency must return a claim that has no dollar amount.",
+   "detail": "Section 14.4(a) states the duty but gives no deadline, so the model cannot record a late return as a breach."
+  },
+  "transfer-duty": {
+   "plain": "The wrong agency must pass the claim on to the right agency.",
+   "detail": "Section 14.2(b) states the duty without a deadline. How fast the agency acts comes from a labeled assumption."
+  },
+  "presentment-on-transfer": {
+   "plain": "The claim counts as presented only when the right agency receives it.",
+   "detail": "Under § 14.2(c), the delay at the wrong agency pushes presentment later."
+  },
+  "presentment-on-amount": {
+   "plain": "The claim counts as presented once it states a dollar amount.",
+   "detail": "Section 14.4(b) measures presentment from receipt of a claim with a sum certain."
+  },
+  "disposition-clock": {
+   "plain": "A six-month period for the agency to decide starts at presentment.",
+   "detail": "The model counts six calendar months, not 180 days, and clamps to month end by assumption."
+  },
+  "deemed-denial": {
+   "plain": "After six months without a decision, the claimant may treat the claim as denied.",
+   "detail": "This is an option for the claimant. It does not decide whether the claim succeeds."
+  },
+  "mailed-claim": {
+   "plain": "A paper claim travels by mail before it counts.",
+   "detail": "The transit time comes from a labeled assumption, not from the regulation."
+  },
+  "presentment-on-delivery": {
+   "plain": "The mailed claim counts when the responsible agency receives it.",
+   "detail": "Section 14.2(a) ties presentment to receipt by the responsible agency."
+  },
+  "receipt-time": {
+   "plain": "The claim is received the moment it enters the intake system.",
+   "detail": "Section 3(a) of the fictional draft does not wait for an employee to read it."
+  },
+  "act-presentment-direct": {
+   "plain": "The claim is presented at the receipt time.",
+   "detail": "Section 3(c) requires receipt by the responsible agency and a sum certain."
+  },
+  "act-missing-amount-notice": {
+   "plain": "The agency must tell the claimant within 15 business days that the amount is missing.",
+   "detail": "Section 5(a) of the fictional draft. Section 5 takes effect 180 days after enactment."
+  },
+  "routing-duty": {
+   "plain": "The wrong agency must route the claim within 2 business days.",
+   "detail": "Section 4(a) creates a duty. Whether the agency actually meets it comes from a separate assumption."
+  },
+  "preserved-receipt": {
+   "plain": "The claim keeps its original receipt time even though it went to the wrong agency.",
+   "detail": "Section 4(b) treats it as received by the responsible agency at that time."
+  },
+  "routing-complaint": {
+   "plain": "Because the routing deadline passed, the claimant may complain to the Claims Commission.",
+   "detail": "Section 4(d) permits a complaint. Section 4(c) says the receipt time stays the same."
+  },
+  "cure": {
+   "plain": "Supplying the amount within 30 days cures the omission.",
+   "detail": "Section 5(b) of the fictional draft."
+  },
+  "act-presentment-on-amount": {
+   "plain": "With the amount supplied, the claim is presented.",
+   "detail": "Section 3(c) requires a sum certain."
+  },
+  "clock-relation-back": {
+   "plain": "Under reading A, the six-month period runs from the original receipt time.",
+   "detail": "This follows § 5(b). Reading B, under § 5(c), would start it at the cure instead."
+  },
+  "act-disposition-clock": {
+   "plain": "A six-month period for the agency to decide starts at presentment.",
+   "detail": "Section 6(a); § 5(c) says the period begins when the claim states a sum certain."
+  },
+  "act-deemed-denial": {
+   "plain": "After six months without a decision, the claimant may treat the claim as denied.",
+   "detail": "Section 6(a) creates an option, not an automatic result."
+  },
+  "alternative-means": {
+   "plain": "During an outage, the Claims Commission must offer another way to submit.",
+   "detail": "Section 7(a) sets no time limit, so the model records the duty without a deadline."
+  },
+  "alternative-receipt": {
+   "plain": "A submission through the alternative means counts when it is accepted.",
+   "detail": "Section 7(b)."
+  }
+ },
+ "eventLabels": {
+  "claim-submitted": "Claim submitted",
+  "presented": "Claim presented",
+  "claim-transferred": "Claim forwarded to the responsible agency",
+  "deficiency-notice-sent": "Missing-amount notice sent",
+  "amount-supplied": "Missing amount supplied",
+  "disposition-period-ended": "Six-month period ended",
+  "routing-deadline-missed": "Routing deadline missed",
+  "deficiency-notice-late": "Notice deadline missed",
+  "intake-outage": "Intake system outage",
+  "submitted-alternative-means": "Submitted another way",
+  "alternative-means-available": "Alternative means available",
+  "claim-delivered": "Mailed claim delivered",
+  "performed:transfer-claim": "Roads forwards the claim",
+  "deadline-passed:transfer-claim": "Routing deadline passed without forwarding",
+  "performed:return-deficient-claim": "Agency sends the missing-amount notice",
+  "deadline-passed:return-deficient-claim": "Notice deadline passed without a notice",
+  "performed:provide-alternative-means": "Commission provides an alternative means",
+  "deadline-passed:provide-alternative-means": "Alternative means deadline passed"
+ }
+}

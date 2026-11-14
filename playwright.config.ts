@@ -1,10 +1,12 @@
 import { defineConfig } from '@playwright/test';
+/** LM_E2E_BASE_URL targets an already running server (e.g. the authoring job); otherwise a dev server is started. */
+const external = process.env.LM_E2E_BASE_URL;
 export default defineConfig({
   testDir: './tests/browser',
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: external ?? 'http://127.0.0.1:3000',
     headless: true,
     launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}
   },
-  webServer: { command: 'pnpm dev --hostname 127.0.0.1', url: 'http://127.0.0.1:3000', reuseExistingServer: !process.env.CI, timeout: 120000 }
+  ...(external ? {} : { webServer: { command: 'pnpm dev --hostname 127.0.0.1', url: 'http://127.0.0.1:3000', reuseExistingServer: !process.env.CI, timeout: 120000 } })
 });

@@ -1,0 +1,1079 @@
+{
+ "format": "law-machine-pack-v1",
+ "packId": "lakeside-library-budget",
+ "title": "Library budget allocation (fictional)",
+ "question": "Where does the money go, and what if it runs short?",
+ "summary": "An invented library district policy and an invented reserve draft. Watch whole-dollar transfers between accounts and see what happens when the fund runs short.",
+ "domain": "resource-allocation",
+ "fictional": true,
+ "disclaimers": [
+  "Lakeside is fictional. These budget rules were written for this demonstration and are not real policy.",
+  "This is simple accounting, not an economic forecast."
+ ],
+ "releaseLabel": "2026.11.0",
+ "releasedAt": "2026-11-14",
+ "sources": [
+  {
+   "id": "policy-current",
+   "title": "Lakeside Library District Allocation Policy (fictional)",
+   "kind": "fictional",
+   "file": "sources/allocation-policy.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  },
+  {
+   "id": "policy-draft",
+   "title": "Lakeside allocation policy, reserve draft (fictional)",
+   "kind": "fictional",
+   "file": "sources/allocation-policy-draft.md",
+   "format": "markdown",
+   "origin": "Written for the Law Machine demonstration",
+   "retrievedAt": null,
+   "rights": "Invented demonstration text; may be reused freely."
+  }
+ ],
+ "actors": [
+  {
+   "id": "treasurer",
+   "name": "Treasurer",
+   "kind": "person",
+   "description": "The fictional district treasurer.",
+   "group": "district"
+  },
+  {
+   "id": "general-fund",
+   "name": "General fund",
+   "kind": "other",
+   "description": "The district's main account.",
+   "group": "accounts"
+  },
+  {
+   "id": "north-branch",
+   "name": "North Branch",
+   "kind": "organization",
+   "description": "A fictional branch library account.",
+   "group": "accounts"
+  },
+  {
+   "id": "south-branch",
+   "name": "South Branch",
+   "kind": "organization",
+   "description": "A fictional branch library account.",
+   "group": "accounts"
+  },
+  {
+   "id": "reserve",
+   "name": "Reserve account",
+   "kind": "other",
+   "description": "The reserve account added by the draft.",
+   "group": "accounts"
+  }
+ ],
+ "facts": [
+  {
+   "id": "generalFund",
+   "type": "number",
+   "label": "General fund",
+   "description": "General fund, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "northBranch",
+   "type": "number",
+   "label": "North Branch account",
+   "description": "North Branch account, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "southBranch",
+   "type": "number",
+   "label": "South Branch account",
+   "description": "South Branch account, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "reserveFund",
+   "type": "number",
+   "label": "Reserve account",
+   "description": "Reserve account, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "branchAmount",
+   "type": "number",
+   "label": "Branch amount",
+   "description": "Branch amount, in whole dollars.",
+   "unit": "USD"
+  },
+  {
+   "id": "reserveAmount",
+   "type": "number",
+   "label": "Reserve amount",
+   "description": "Reserve amount, in whole dollars.",
+   "unit": "USD"
+  }
+ ],
+ "calendars": [
+  {
+   "id": "lakeside-civil",
+   "version": "2027.1",
+   "timeZone": "UTC",
+   "weekendDays": [
+    0,
+    6
+   ],
+   "observedHolidays": [
+    "2027-07-05",
+    "2027-09-06"
+   ],
+   "basis": "Assumption for this fictional district: business days are Monday to Friday excluding invented holidays (5 July)."
+  }
+ ],
+ "deadlines": [
+  {
+   "id": "cur-10bd",
+   "label": "10 business days after adoption",
+   "calendarId": "lakeside-civil",
+   "amount": 10,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "2(a)",
+     "quote": "within 10 business days after the budget is adopted",
+     "source": "policy-current"
+    }
+   ]
+  },
+  {
+   "id": "dft-5bd",
+   "label": "5 business days after adoption",
+   "calendarId": "lakeside-civil",
+   "amount": 5,
+   "unit": "business-day",
+   "startCounting": "exclude-trigger",
+   "monthEnd": "clamp",
+   "nonBusinessDue": "extend",
+   "sourceRefs": [
+    {
+     "provision": "3(a)",
+     "quote": "within 5 business days after the budget is adopted",
+     "source": "policy-draft"
+    }
+   ]
+  }
+ ],
+ "frameworks": [
+  {
+   "id": "baseline",
+   "label": "Current policy (fictional)",
+   "role": "baseline",
+   "billId": "lakeside-allocation",
+   "version": "2027",
+   "versionId": "lakeside-policy-2027",
+   "status": "enacted",
+   "jurisdiction": "lakeside",
+   "agency": "treasurer",
+   "asOf": "2027-01-01",
+   "sourceId": "policy-current",
+   "rules": [
+    {
+     "id": "cur-allocate-north",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "1(a)",
+       "quote": "shall allocate the branch amount from the general fund to the North Branch account"
+      },
+      {
+       "provision": "1(b)",
+       "quote": "If the general fund does not hold enough money for an allocation, that allocation is not made."
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "treasurer",
+     "explanationKey": "allocate-north",
+     "effect": {
+      "checkpoint": "north-allocation",
+      "transfer": {
+       "account": "generalFund",
+       "to": "northBranch",
+       "amountFact": "branchAmount"
+      },
+      "summary": "The Treasurer allocates the branch amount to the North Branch, if the general fund holds enough.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "cur-allocate-south",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "1(a)",
+       "quote": "and then to the South Branch account"
+      },
+      {
+       "provision": "1(b)",
+       "quote": "If the general fund does not hold enough money for an allocation, that allocation is not made."
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "treasurer",
+     "explanationKey": "allocate-south",
+     "effect": {
+      "checkpoint": "south-allocation",
+      "transfer": {
+       "account": "generalFund",
+       "to": "southBranch",
+       "amountFact": "branchAmount"
+      },
+      "summary": "The Treasurer allocates the branch amount to the South Branch, if the general fund holds enough.",
+      "kind": "record"
+     },
+     "after": [
+      "cur-allocate-north"
+     ]
+    },
+    {
+     "id": "cur-report",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(a)",
+       "quote": "shall publish an allocation report within 10 business days after the budget is adopted"
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "treasurer",
+     "explanationKey": "report",
+     "effect": {
+      "action": "publish-report",
+      "deadlineId": "cur-10bd",
+      "onPerformEmits": "report-published",
+      "onBreachEmits": "report-late",
+      "checkpoint": "report",
+      "summary": "The Treasurer must publish an allocation report within 10 business days.",
+      "kind": "create-obligation"
+     },
+     "after": [
+      "cur-allocate-south"
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-lakeside-library-district-allocation-policy-fictional",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "1(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(a)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "id": "proposal",
+   "label": "Reserve draft (fictional)",
+   "role": "proposal",
+   "billId": "lakeside-reserve",
+   "version": "Draft 1",
+   "versionId": "lakeside-reserve-draft-1",
+   "status": "draft",
+   "jurisdiction": "lakeside",
+   "agency": "treasurer",
+   "asOf": "2027-01-01",
+   "sourceId": "policy-draft",
+   "rules": [
+    {
+     "id": "dft-reserve",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "1(a)",
+       "quote": "shall first transfer the reserve amount from the general fund to the reserve account"
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "treasurer",
+     "explanationKey": "reserve",
+     "effect": {
+      "checkpoint": "reserve",
+      "transfer": {
+       "account": "generalFund",
+       "to": "reserveFund",
+       "amountFact": "reserveAmount"
+      },
+      "summary": "The Treasurer first moves the reserve amount to the reserve account.",
+      "kind": "record"
+     }
+    },
+    {
+     "id": "dft-allocate-north",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(a)",
+       "quote": "shall allocate the branch amount from the general fund to the North Branch account"
+      },
+      {
+       "provision": "2(b)",
+       "quote": "If the general fund does not hold enough money for an allocation, that allocation is not made."
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "treasurer",
+     "explanationKey": "allocate-north",
+     "effect": {
+      "checkpoint": "north-allocation",
+      "transfer": {
+       "account": "generalFund",
+       "to": "northBranch",
+       "amountFact": "branchAmount"
+      },
+      "summary": "The Treasurer allocates the branch amount to the North Branch, if the general fund holds enough.",
+      "kind": "record"
+     },
+     "after": [
+      "dft-reserve"
+     ]
+    },
+    {
+     "id": "dft-allocate-south",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "2(a)",
+       "quote": "and then to the South Branch account"
+      },
+      {
+       "provision": "2(b)",
+       "quote": "If the general fund does not hold enough money for an allocation, that allocation is not made."
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "record",
+     "actorId": "treasurer",
+     "explanationKey": "allocate-south",
+     "effect": {
+      "checkpoint": "south-allocation",
+      "transfer": {
+       "account": "generalFund",
+       "to": "southBranch",
+       "amountFact": "branchAmount"
+      },
+      "summary": "The Treasurer allocates the branch amount to the South Branch, if the general fund holds enough.",
+      "kind": "record"
+     },
+     "after": [
+      "dft-allocate-north"
+     ]
+    },
+    {
+     "id": "dft-report",
+     "modal": "obligation",
+     "sourceRefs": [
+      {
+       "provision": "3(a)",
+       "quote": "shall publish an allocation report within 5 business days after the budget is adopted"
+      }
+     ],
+     "trigger": "budget-adopted",
+     "when": {
+      "op": "truth",
+      "value": {
+       "op": "literal",
+       "value": true
+      }
+     },
+     "exceptions": [],
+     "operation": "create-obligation",
+     "actorId": "treasurer",
+     "explanationKey": "report-draft",
+     "effect": {
+      "action": "publish-report",
+      "deadlineId": "dft-5bd",
+      "onPerformEmits": "report-published",
+      "onBreachEmits": "report-late",
+      "checkpoint": "report",
+      "summary": "The Treasurer must publish an allocation report within 5 business days.",
+      "kind": "create-obligation"
+     },
+     "after": [
+      "dft-allocate-south"
+     ]
+    }
+   ],
+   "coverage": [
+    {
+     "provision": "h-lakeside-library-district-allocation-policy-reserve-draft-fi",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "1(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "2(a)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "2(b)",
+     "mode": "modeled"
+    },
+    {
+     "provision": "3",
+     "mode": "explanatory-only"
+    },
+    {
+     "provision": "3(a)",
+     "mode": "modeled"
+    }
+   ],
+   "gaps": []
+  }
+ ],
+ "interpretations": [],
+ "assumptions": [
+  {
+   "id": "report-time-assumed",
+   "label": "Report publication time",
+   "description": "How many business days the Treasurer takes to publish the report.",
+   "classification": "hypothetical",
+   "limitations": [
+    "Illustrative only."
+   ]
+  },
+  {
+   "id": "lakeside-business-days",
+   "label": "Lakeside business days",
+   "description": "Monday to Friday excluding invented holidays.",
+   "classification": "interpretation",
+   "limitations": [
+    "Lakeside is fictional."
+   ]
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "ample-funds",
+   "title": "Enough money for everything",
+   "question": "Where does the money go when the fund is large enough?",
+   "summary": "The general fund holds 500,000 dollars. Both versions fund both branches; the draft first sets aside a 50,000-dollar reserve.",
+   "hypothetical": true,
+   "startDate": "2027-07-01",
+   "calendarId": "lakeside-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "generalFund": 500000,
+    "northBranch": 0,
+    "southBranch": 0,
+    "reserveFund": 0,
+    "branchAmount": 200000,
+    "reserveAmount": 50000
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "adopt",
+     "day": 0,
+     "kind": "budget-adopted",
+     "actorId": "treasurer",
+     "label": "The board adopts the annual budget"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "publish-report",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 3,
+      "unit": "business-day"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "general-fund",
+     "label": "General fund at adoption (dollars)",
+     "help": "Hypothetical starting balance.",
+     "control": "integer",
+     "min": 0,
+     "max": 2000000,
+     "unit": "dollars",
+     "target": {
+      "kind": "fact",
+      "factId": "generalFund"
+     }
+    },
+    {
+     "id": "report-delay",
+     "label": "Business days to publish the report",
+     "help": "An operational assumption.",
+     "control": "integer",
+     "min": 0,
+     "max": 20,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "publish-report"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "assumptions": [
+    "report-time-assumed",
+    "lakeside-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "Money moves between accounts; the total never changes."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "north-allocation",
+      "present": true,
+      "reasoning": "Funded on adoption day.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "south-allocation",
+      "present": true,
+      "reasoning": "Funded on adoption day.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "report",
+      "present": true,
+      "reasoning": "10 business days from Thursday 1 July, skipping the fictional 5 July holiday, is 16 July.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-07-16"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "reserve",
+      "present": true,
+      "reasoning": "Reserve moved first.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "south-allocation",
+      "present": true,
+      "reasoning": "Still enough money.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "report",
+      "present": true,
+      "reasoning": "5 business days from 1 July, skipping 5 July, is 9 July; published 7 July.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-07-09"
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "generalFund": 100000,
+     "northBranch": 200000,
+     "southBranch": 200000,
+     "reserveFund": 0
+    },
+    "proposal": {
+     "generalFund": 50000,
+     "northBranch": 200000,
+     "southBranch": 200000,
+     "reserveFund": 50000
+    }
+   },
+   "conservedAccounts": [
+    "generalFund",
+    "northBranch",
+    "southBranch",
+    "reserveFund"
+   ]
+  },
+  {
+   "id": "tight-funds",
+   "title": "Not enough for both branches",
+   "question": "What happens when the reserve leaves too little for the South Branch?",
+   "summary": "The general fund holds 420,000 dollars. The current policy funds both branches. Under the draft the reserve comes first, so only 170,000 dollars remain when the South Branch allocation is due, and it is not made.",
+   "hypothetical": true,
+   "startDate": "2027-07-01",
+   "calendarId": "lakeside-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "generalFund": 420000,
+    "northBranch": 0,
+    "southBranch": 0,
+    "reserveFund": 0,
+    "branchAmount": 200000,
+    "reserveAmount": 50000
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "adopt",
+     "day": 0,
+     "kind": "budget-adopted",
+     "actorId": "treasurer",
+     "label": "The board adopts the annual budget"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "publish-report",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 3,
+      "unit": "business-day"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "general-fund",
+     "label": "General fund at adoption (dollars)",
+     "help": "Hypothetical starting balance.",
+     "control": "integer",
+     "min": 0,
+     "max": 2000000,
+     "unit": "dollars",
+     "target": {
+      "kind": "fact",
+      "factId": "generalFund"
+     }
+    },
+    {
+     "id": "report-delay",
+     "label": "Business days to publish the report",
+     "help": "An operational assumption.",
+     "control": "integer",
+     "min": 0,
+     "max": 20,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "publish-report"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "assumptions": [
+    "report-time-assumed",
+    "lakeside-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "A rule can fail for lack of money; the model shows the shortfall instead of inventing funds."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "south-allocation",
+      "present": true,
+      "reasoning": "420,000 − 200,000 = 220,000 is enough for the South Branch.",
+      "eventDate": "2027-07-01"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "reserve",
+      "present": true,
+      "reasoning": "Reserve moved first.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "north-allocation",
+      "present": true,
+      "reasoning": "370,000 is enough for the North Branch.",
+      "eventDate": "2027-07-01"
+     },
+     {
+      "checkpoint": "south-allocation",
+      "present": false,
+      "reasoning": "Only 170,000 remains, so § 2(b) means the allocation is not made."
+     }
+    ]
+   },
+   "expectedFacts": {
+    "baseline": {
+     "generalFund": 20000,
+     "northBranch": 200000,
+     "southBranch": 200000
+    },
+    "proposal": {
+     "generalFund": 170000,
+     "northBranch": 200000,
+     "southBranch": 0,
+     "reserveFund": 50000
+    }
+   },
+   "conservedAccounts": [
+    "generalFund",
+    "northBranch",
+    "southBranch",
+    "reserveFund"
+   ]
+  },
+  {
+   "id": "late-report",
+   "title": "Report published after 7 business days",
+   "question": "Is a report after 7 business days late?",
+   "summary": "The Treasurer publishes the report 7 business days after adoption: on time under the current 10-day rule, late under the draft's 5-day rule.",
+   "hypothetical": true,
+   "startDate": "2027-07-01",
+   "calendarId": "lakeside-civil",
+   "seed": 7,
+   "horizonDays": 60,
+   "enactment": {
+    "assume": true,
+    "offsetDays": -30
+   },
+   "facts": {
+    "generalFund": 500000,
+    "northBranch": 0,
+    "southBranch": 0,
+    "reserveFund": 0,
+    "branchAmount": 200000,
+    "reserveAmount": 50000
+   },
+   "unknownFacts": [],
+   "interpretationChoices": {},
+   "events": [
+    {
+     "id": "adopt",
+     "day": 0,
+     "kind": "budget-adopted",
+     "actorId": "treasurer",
+     "label": "The board adopts the annual budget"
+    }
+   ],
+   "behaviors": [
+    {
+     "action": "publish-report",
+     "mode": "perform-after",
+     "delay": {
+      "amount": 7,
+      "unit": "business-day"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "parameters": [
+    {
+     "id": "report-delay",
+     "label": "Business days to publish the report",
+     "help": "An operational assumption.",
+     "control": "integer",
+     "min": 0,
+     "max": 20,
+     "unit": "business days",
+     "target": {
+      "kind": "behavior-delay",
+      "action": "publish-report"
+     },
+     "assumptionId": "report-time-assumed"
+    }
+   ],
+   "assumptions": [
+    "report-time-assumed",
+    "lakeside-business-days"
+   ],
+   "unresolved": [],
+   "learn": [
+    "The same behavior can satisfy one rule and breach another."
+   ],
+   "expected": {
+    "baseline": [
+     {
+      "checkpoint": "report",
+      "present": true,
+      "reasoning": "Due 16 July; published 13 July.",
+      "dutyState": "satisfied",
+      "dueDate": "2027-07-16"
+     }
+    ],
+    "proposal": [
+     {
+      "checkpoint": "report",
+      "present": true,
+      "reasoning": "Due 9 July; published 13 July, so the duty is breached.",
+      "dutyState": "breached",
+      "dueDate": "2027-07-09"
+     }
+    ]
+   },
+   "conservedAccounts": [
+    "generalFund",
+    "northBranch",
+    "southBranch",
+    "reserveFund"
+   ]
+  }
+ ],
+ "scene": {
+  "id": "lakeside-map",
+  "title": "Where Lakeside's money goes",
+  "width": 720,
+  "height": 420,
+  "groups": [
+   {
+    "id": "district",
+    "label": "District"
+   },
+   {
+    "id": "accounts",
+    "label": "Accounts"
+   }
+  ],
+  "nodes": [
+   {
+    "actorId": "treasurer",
+    "x": 120,
+    "y": 90,
+    "icon": "person",
+    "group": "district"
+   },
+   {
+    "actorId": "general-fund",
+    "x": 120,
+    "y": 280,
+    "icon": "ledger",
+    "group": "accounts"
+   },
+   {
+    "actorId": "reserve",
+    "x": 380,
+    "y": 90,
+    "icon": "ledger",
+    "group": "accounts"
+   },
+   {
+    "actorId": "north-branch",
+    "x": 600,
+    "y": 200,
+    "icon": "office",
+    "group": "accounts"
+   },
+   {
+    "actorId": "south-branch",
+    "x": 600,
+    "y": 350,
+    "icon": "office",
+    "group": "accounts"
+   }
+  ],
+  "edges": [
+   {
+    "id": "to-reserve",
+    "from": "general-fund",
+    "to": "reserve",
+    "kind": "route",
+    "label": "reserve",
+    "eventKinds": [
+     "dft-reserve"
+    ]
+   },
+   {
+    "id": "to-north",
+    "from": "general-fund",
+    "to": "north-branch",
+    "kind": "route",
+    "label": "allocation",
+    "eventKinds": [
+     "cur-allocate-north",
+     "dft-allocate-north"
+    ]
+   },
+   {
+    "id": "to-south",
+    "from": "general-fund",
+    "to": "south-branch",
+    "kind": "route",
+    "label": "allocation",
+    "eventKinds": [
+     "cur-allocate-south",
+     "dft-allocate-south"
+    ]
+   },
+   {
+    "id": "manages",
+    "from": "treasurer",
+    "to": "general-fund",
+    "kind": "authority",
+    "label": "manages",
+    "eventKinds": [
+     "budget-adopted"
+    ]
+   }
+  ]
+ },
+ "glossary": [
+  {
+   "id": "general-fund",
+   "term": "General fund",
+   "plain": "The district's main account.",
+   "detail": "Allocations come out of it.",
+   "aliases": [
+    "fund",
+    "balance",
+    "money"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "1(b)",
+     "quote": "If the general fund does not hold enough money for an allocation, that allocation is not made.",
+     "source": "policy-current"
+    }
+   ],
+   "related": [
+    "reserve"
+   ]
+  },
+  {
+   "id": "reserve",
+   "term": "Reserve",
+   "plain": "Money set aside before allocations.",
+   "detail": "Only under the fictional draft.",
+   "aliases": [
+    "reserve account",
+    "set aside"
+   ],
+   "sourceRefs": [
+    {
+     "provision": "1(a)",
+     "quote": "shall first transfer the reserve amount from the general fund to the reserve account"
+    }
+   ],
+   "related": [
+    "general-fund"
+   ]
+  }
+ ],
+ "explanations": {
+  "allocate-north": {
+   "plain": "The North Branch receives its allocation from the general fund.",
+   "detail": "Whole-dollar transfer; if the fund is short, the allocation is not made."
+  },
+  "allocate-south": {
+   "plain": "The South Branch receives its allocation from the general fund.",
+   "detail": "Whole-dollar transfer; if the fund is short, the allocation is not made."
+  },
+  "reserve": {
+   "plain": "The reserve is set aside before branch allocations.",
+   "detail": "Section 1(a) of the fictional draft."
+  },
+  "report": {
+   "plain": "The Treasurer must publish a report within 10 business days.",
+   "detail": "Section 2(a)."
+  },
+  "report-draft": {
+   "plain": "The Treasurer must publish a report within 5 business days.",
+   "detail": "Section 3(a) of the fictional draft."
+  }
+ },
+ "eventLabels": {
+  "budget-adopted": "Budget adopted",
+  "report-published": "Report published",
+  "report-late": "Report deadline missed",
+  "performed:publish-report": "Treasurer publishes the report",
+  "deadline-passed:publish-report": "Report deadline passed without a report"
+ }
+}

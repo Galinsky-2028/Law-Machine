@@ -1,29 +1,33 @@
 # Law Machine
 
-Follow a hypothetical claim, application, decision, document or resource through a source-linked model of law. Compare a dated baseline with a proposed bill, change circumstances, and inspect the rules and assumptions behind each outcome.
+Follow a hypothetical claim, application, decision or budget through a source-linked model of law. Compare a dated baseline with a proposal, change the circumstances, stress-test the assumptions, and inspect the exact provision behind every step.
 
-This repository retains all 60 approved milestones and has 29 merged milestone implementations as of the 2026-10-17 checkpoint. The TypeScript simulation primitives now cover versioned sources, deterministic scheduling, obligations, comparisons and source-linked explanations; a real browser worker runs **fictional fixtures only**. The production electronic-filing pack and public legal simulator are **not** complete or deployed. See [current handoff](docs/HANDOFF.md) for merged units, open PRs and blocked dependencies.
+**Status (2026-11-14):** the public explorer, the deterministic pack runtime, the headless SDK, passkey-secured authoring with encrypted private sources, durable jobs, signed atomic publication, optional AI candidate extraction, server verification, saved scenarios, backups and the operations runbook are implemented and tested. See [the handoff](docs/HANDOFF.md) for the current state, including what is still blocked.
+
+The three published packs are **fictional** and labelled as such:
+
+- *Meridian claims*, a filing and transfer proposal;
+- *Riverbend permits*, a permit-clock amendment;
+- *Lakeside library budget*, appropriations with conservation of funds.
+
+The real electronic-filing bill pack stays unavailable until the authentic bill text and dated official baseline are supplied. Nothing here accepts a filing, issues a receipt, computes a real person's deadline, or says a proposal is law.
 
 ## Start here
 
-- [Agent instructions](AGENTS.md)
-- [Technical architecture](docs/ARCHITECTURE.md)
-- [Complete development plan](docs/DEVELOPMENT_PLAN.md)
-- [Canonical PR registry](registry/prs.json) and [format](registry/PR_FORMAT.md)
-- [Implementation handoff](docs/HANDOFF.md)
-- [Security scope and threat model](security/THREAT_MODEL.md)
-- [Original specification](docs/source/ORIGINAL_SPECIFICATION.md)
+- [Agent instructions](AGENTS.md), [handoff](docs/HANDOFF.md), [architecture](docs/ARCHITECTURE.md), [development plan](docs/DEVELOPMENT_PLAN.md), [PR registry](registry/prs.json)
+- [Authoring guide](docs/AUTHORING.md), [HTTP API (OpenAPI)](docs/openapi.yaml), [headless SDK](docs/HEADLESS_SDK.md)
+- [Operations runbook](docs/OPERATIONS.md), [threat model](security/THREAT_MODEL.md), [evidence](docs/evidence/)
 
 ## Develop and verify
 
-Use Node **24.19.0**, pnpm **11.25.0** and Python **3.11 or later**, then run:
+Use Node **24.19.0** and pnpm **11.25.0**:
 
 ```sh
-pnpm check
-pnpm audit
-pnpm build
+pnpm install --frozen-lockfile
+pnpm check          # boundaries, lint, types, unit tests, pack golden checks, secret scan, SDK consumer smoke
+pnpm build && pnpm start
+pnpm test:browser   # Chromium + axe, against the production build
+pnpm export:static  # fully static site in dist/static
 ```
 
-For a fresh checkout, first run `pnpm install --frozen-lockfile`. Then `pnpm dev` runs the application locally without provider credentials or a database. The `/design` and `/worker-preview` pages use explicitly fictional examples; private author routes remain disabled until managed authentication is verified. See [development commands](docs/DEVELOPMENT.md) for builds, browser tests and dependency auditing. The original offline contract checks remain available through `npm run check:foundation`.
-
-Public reading and simulation will require no account. Authoring will require secure authenticated sessions and organization membership. The first model concerns a proposed electronic-filing bill; the service will not accept real filings, issue government receipts or calculate authoritative deadlines for a person's case. Ask Bill's character, conversation and voice remain separate product work consuming a future headless SDK.
+`pnpm dev` runs without any database or credentials (public mode). Authoring needs PostgreSQL and the variables in [OPERATIONS.md](docs/OPERATIONS.md). Ask Bill is a separate product that consumes the headless SDK.

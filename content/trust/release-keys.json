@@ -1,0 +1,24 @@
+{
+ "format": "law-machine-trust-v1",
+ "keys": [
+  {
+   "keyId": "lm-publisher-2026-11",
+   "algorithm": "ECDSA-P256-SHA256",
+   "publicKeyJwk": {
+    "key_ops": [
+     "verify"
+    ],
+    "ext": true,
+    "kty": "EC",
+    "x": "U9ue681ZQXzgh2AdaKkVYbCjK_ODt7_rAdP2WAlPVBY",
+    "y": "B_byLwdwWBl488mjZ66Mx7YjA3DIZeUyeRle6Flsa_Q",
+    "crv": "P-256"
+   },
+   "status": "active",
+   "validFrom": "2026-11-01",
+   "validUntil": null,
+   "revokedAt": null,
+   "note": "Law Machine publisher key, generated 2026-11-14. Private half held only in the deployment secret store."
+  }
+ ]
+}

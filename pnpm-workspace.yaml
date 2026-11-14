@@ -16,3 +16,6 @@ minimumReleaseAgeExclude:
   - '@next/swc-win32-x64-msvc@16.4.2'
   - eslint@10.13.0
   - next@16.4.2
+overrides:
+  # GHSA-g3hv-75wg-m249: minimatch <11.0.1 globparts amplification (dev tooling only).
+  minimatch: 11.0.5

@@ -1,0 +1,21 @@
+{
+ "packId": "riverbend-permits",
+ "current": "a33fb1307d73a2af54733421fe6c04798b886fdbf517f0da7b3afe0b2512f301",
+ "releases": [
+  {
+   "manifestDigest": "a33fb1307d73a2af54733421fe6c04798b886fdbf517f0da7b3afe0b2512f301",
+   "releaseId": "riverbend-permits@2026.11.0",
+   "label": "2026.11.0",
+   "publishedAt": "2026-11-14",
+   "status": "current",
+   "note": null,
+   "signature": {
+    "format": "law-machine-release-signature-v1",
+    "keyId": "lm-publisher-2026-11",
+    "manifestDigest": "a33fb1307d73a2af54733421fe6c04798b886fdbf517f0da7b3afe0b2512f301",
+    "signedAt": "2026-11-14",
+    "signature": "uxAQf6fWvxQTArptAyP7MxxcGxz0BVB_Zk1_lh8AYlyml88vITwUcWZCoyFqnl8uSVaQxNpL4ve6AExX94gBVQ"
+   }
+  }
+ ]
+}
