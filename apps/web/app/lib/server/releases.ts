@@ -10,7 +10,7 @@ export type ReleaseEntry = { manifestDigest: string; releaseId: string; label: s
 export type ReleaseIndex = { packId: string; current: string | null; releases: ReleaseEntry[] };
 
 function repositoryRoot(): string {
-  let dir = resolve(process.cwd());
+  let dir = resolve(/*turbopackIgnore: true*/ process.cwd());
   for (let i = 0; i < 6; i++) {
     if (existsSync(join(dir, 'pnpm-workspace.yaml'))) return dir;
     dir = dirname(dir);
@@ -66,4 +66,25 @@ export function readManifestBytes(packId: string, digest: string): Uint8Array | 
 }
 export function currentPackIds(): string[] {
   return readCatalog().packs.map(p => p.packId);
+}
+
+/** Static (committed) releases first, then releases published through authoring. */
+export type LoadedPack = { release: PackRelease; manifestDigest: string; catalog: import('../../../../../packages/contracts/src/index.ts').CatalogPack; base: '/releases' | '/published' };
+export async function loadPack(packId: string, digest?: string | null): Promise<LoadedPack | null> {
+  const local = readRelease(packId, digest);
+  const entry = readCatalog().packs.find(p => p.packId === packId);
+  if (local && entry) return { release: local.release, manifestDigest: local.entry.manifestDigest, catalog: entry, base: '/releases' };
+  const { publishedRelease } = await import('./published.ts');
+  const db = await publishedRelease(packId, digest);
+  return db ? { ...db, base: '/published' } : null;
+}
+export async function fullCatalog(): Promise<import('../../../../../packages/contracts/src/index.ts').Catalog & { readonly bases: Record<string, '/releases' | '/published'> }> {
+  const local = readCatalog();
+  const { publishedCatalog } = await import('./published.ts');
+  const extra = (await publishedCatalog()).filter(p => !local.packs.some(l => l.packId === p.packId));
+  const bases: Record<string, '/releases' | '/published'> = {};
+  for (const p of local.packs) bases[p.packId] = '/releases';
+  for (const p of extra) bases[p.packId] = '/published';
+  const { withdrawnPacks } = await import('./published.ts');
+  return { ...local, packs: [...local.packs, ...extra], unavailable: [...local.unavailable, ...(await withdrawnPacks())], bases };
 }

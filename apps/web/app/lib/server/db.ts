@@ -6,7 +6,10 @@ import pg from 'pg';
  * is set transaction-locally on the same pooled connection as the query and
  * can never leak to the next request.
  */
-export type Rows = { readonly rows: readonly Record<string, unknown>[]; readonly rowCount: number | null };
+/** Database rows are validated at each use site; the row type is intentionally loose. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Row = Record<string, any>;
+export type Rows = { readonly rows: readonly Row[]; readonly rowCount: number | null };
 export type Tx = { query(sql: string, params?: readonly unknown[]): Promise<Rows> };
 export type Database = {
   query(sql: string, params?: readonly unknown[]): Promise<Rows>;

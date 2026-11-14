@@ -1,26 +1,28 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { readCatalog, readRelease } from '../../../../lib/server/releases.ts';
+import { loadPack, readCatalog, readRelease } from '../../../../lib/server/releases.ts';
 import { SiteFooter, SiteHeader } from '../../../../components/SiteHeader.tsx';
 
 type Props = { params: Promise<{ packId: string; sourceId: string }> };
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 60;
 export function generateStaticParams() {
   return readCatalog().packs.flatMap(p => readRelease(p.packId)!.release.documents.map(d => ({ packId: p.packId, sourceId: d.sourceId })));
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { packId, sourceId } = await params;
-  return { title: (readRelease(packId)?.release.documents.find(d => d.sourceId === sourceId)?.title ?? 'Source') + ' | Law Machine' };
+  return { title: ((await loadPack(packId))?.release.documents.find(d => d.sourceId === sourceId)?.title ?? 'Source') + ' | Law Machine' };
 }
 const MODE: Record<string, string> = { modeled: 'Modeled as an executable rule', 'explanatory-only': 'Explanation only', ambiguous: 'Ambiguous — not modeled as certain', unsupported: 'Not supported', unmapped: 'Not reviewed' };
 
 /** Source explorer: the exact pinned text, its structure, coverage and the rules that cite each provision. */
 export default async function SourcePage({ params }: Props) {
   const { packId, sourceId } = await params;
-  const data = readRelease(packId);
+  const data = await loadPack(packId);
   const doc = data?.release.documents.find(d => d.sourceId === sourceId);
   if (!data || !doc) notFound();
-  const { release, entry } = data;
+  const { release } = data;
+  const entry = { manifestDigest: data.manifestDigest };
   const framework = release.frameworks.find(f => f.versionId === doc.versionId);
   const coverage = framework ? release.coverage.find(c => c.frameworkId === framework.id) : null;
   const depth = (id: string | null, n = 0): number => { const p = id ? doc.provisions.find(x => x.id === id) : null; return p && n < 10 ? depth(p.parentId, n + 1) : n; };
@@ -33,7 +35,7 @@ export default async function SourcePage({ params }: Props) {
         <div><dt>Version</dt><dd><code>{doc.versionId}</code></dd></div>
         <div><dt>Status</dt><dd>{framework ? framework.status + (framework.role === 'baseline' ? ', as of ' + framework.asOf : '') : 'reference'}</dd></div>
         <div><dt>Origin</dt><dd>{doc.origin}{doc.officialUrl ? <> · <a href={doc.officialUrl}>official source</a></> : null}</dd></div>
-        <div><dt>Original bytes</dt><dd><a href={'/releases/' + packId + '/' + entry.manifestDigest + '/' + doc.assetPath} download>Download</a> · SHA-256 <code title={doc.sourceDigest}>{doc.sourceDigest.slice(0, 16)}…</code></dd></div>
+        <div><dt>Original bytes</dt><dd><a href={data.base + '/' + packId + '/' + entry.manifestDigest + '/' + doc.assetPath} download>Download</a> · SHA-256 <code title={doc.sourceDigest}>{doc.sourceDigest.slice(0, 16)}…</code></dd></div>
         <div><dt>Rights</dt><dd>{doc.rights}</dd></div>
       </dl>
       {coverage && <p className="coverage-statement">{coverage.statement}</p>}

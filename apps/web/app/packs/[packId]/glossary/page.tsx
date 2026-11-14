@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { readCatalog, readRelease } from '../../../lib/server/releases.ts';
+import { loadPack, readCatalog } from '../../../lib/server/releases.ts';
 import { SiteFooter, SiteHeader } from '../../../components/SiteHeader.tsx';
 
 type Props = { params: Promise<{ packId: string }> };
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 60;
 export function generateStaticParams() { return readCatalog().packs.map(p => ({ packId: p.packId })); }
 export const metadata: Metadata = { title: 'Glossary | Law Machine' };
 
 export default async function Glossary({ params }: Props) {
   const { packId } = await params;
-  const data = readRelease(packId);
+  const data = await loadPack(packId);
   if (!data) notFound();
   const { release } = data;
   return <>

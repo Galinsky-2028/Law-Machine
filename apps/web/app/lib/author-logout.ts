@@ -9,7 +9,7 @@ const clearCookies=[
 /** Prepared server handler, not mounted publicly. Requires a trusted restricted store. */
 export function createAuthorLogoutHandler(store:RevocableAuthorSessionStore,expectedOrigin:string,now:()=>number=Date.now){
  const configured=new URL(expectedOrigin);
- if(configured.protocol!=='https:'||expectedOrigin!==configured.origin)throw Error('AUTHOR_ORIGIN_INVALID');
+ if((configured.protocol!=='https:'&&!(configured.protocol==='http:'&&configured.hostname==='localhost'))||expectedOrigin!==configured.origin)throw Error('AUTHOR_ORIGIN_INVALID');
  const identity=new StoredCookieAuthorIdentityAdapter(store,now);
  return async(request:Request):Promise<Response>=>{
   const headers=new Headers({'cache-control':'no-store','content-type':'application/json'});

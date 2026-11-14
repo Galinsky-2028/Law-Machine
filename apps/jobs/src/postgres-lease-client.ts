@@ -9,7 +9,7 @@ import type { PgConnectionPool, PgTransactionClient } from './editorial-store.ts
  * No HTTP author route or production worker is enabled here.
  */
 export type TrustedWorkerTenant = { readonly orgId: string; readonly serverVerified: true };
-export type DurableJobKind = 'source-import' | 'model-compile' | 'release-validate';
+export type DurableJobKind = 'source-import' | 'model-compile' | 'release-validate' | 'release-publish' | 'ai-extract' | 'source-refresh';
 export type EnqueueDurableJob = {
   readonly id: string;
   readonly documentId: string;
@@ -35,7 +35,7 @@ const IDEMPOTENCY = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/;
 const ERROR = /^[A-Z][A-Z0-9_]{0,63}$/;
 const DIGEST = /^[a-f0-9]{64}$/;
 const MAX_FENCE = 9223372036854775807n;
-const KINDS: readonly DurableJobKind[] = ['source-import', 'model-compile', 'release-validate'];
+const KINDS: readonly DurableJobKind[] = ['source-import', 'model-compile', 'release-validate', 'release-publish', 'ai-extract', 'source-refresh'];
 function uuid(value: unknown): value is string {
   return typeof value === 'string' && UUID.test(value);
 }

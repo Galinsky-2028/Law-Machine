@@ -1,8 +1,9 @@
-import { readCatalog } from './lib/server/releases.ts';
+import { fullCatalog } from './lib/server/releases.ts';
 import { SiteFooter, SiteHeader } from './components/SiteHeader.tsx';
 
-export default function Home() {
-  const catalog = readCatalog();
+export const revalidate = 60;
+export default async function Home() {
+  const catalog = await fullCatalog();
   return <>
     <SiteHeader />
     <main id="main" className="home">

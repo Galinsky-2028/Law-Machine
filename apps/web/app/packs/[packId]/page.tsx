@@ -1,23 +1,26 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { readCatalog, readRelease } from '../../lib/server/releases.ts';
+import { withdrawnNotice } from '../../lib/server/published.ts';
+import { WithdrawnNotice } from '../../components/WithdrawnNotice.tsx';
+import { loadPack, readCatalog } from '../../lib/server/releases.ts';
 import { SiteFooter, SiteHeader } from '../../components/SiteHeader.tsx';
 
 type Props = { params: Promise<{ packId: string }> };
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 60;
 export function generateStaticParams() { return readCatalog().packs.map(p => ({ packId: p.packId })); }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { packId } = await params;
-  const data = readRelease(packId);
+  const data = await loadPack(packId);
   return { title: (data?.release.title ?? 'Model') + ' | Law Machine', description: data?.release.summary ?? '' };
 }
 const date = (iso: string) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' });
 
 export default async function PackLanding({ params }: Props) {
   const { packId } = await params;
-  const data = readRelease(packId);
-  const pack = readCatalog().packs.find(p => p.packId === packId);
-  if (!data || !pack) notFound();
+  const data = await loadPack(packId);
+  if (!data) { const notice = await withdrawnNotice(packId); if (notice) return <WithdrawnNotice notice={notice} />; notFound(); }
+  const pack = data.catalog;
   const { release } = data;
   const first = release.scenarios.find(s => s.tour?.length) ?? release.scenarios[0]!;
   return <>

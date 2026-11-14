@@ -19,7 +19,7 @@ import { Timeline } from './Timeline.tsx';
 type Mode = string; // a framework id, or 'compare'
 const SHA = /^[a-f0-9]{64}$/;
 
-export function Explorer({ packId, scenarioId, current, releases, trust }: { packId: string; scenarioId: string; current: string; releases: readonly CatalogRelease[]; trust: TrustStore }) {
+export function Explorer({ packId, scenarioId, current, releases, trust, base = '/releases' }: { packId: string; scenarioId: string; current: string; releases: readonly CatalogRelease[]; trust: TrustStore; base?: string }) {
   const search = useSearchParams();
   const query = search.toString();
   const requested = search.get('r');
@@ -58,7 +58,7 @@ export function Explorer({ packId, scenarioId, current, releases, trust }: { pac
     if (!digest || !client.current) return;
     let alive = true;
     setLoaded(null); setError(null);
-    void client.current.request('load', generation => ({ type: 'load', generation, base: '/releases', packId, digest, trust })).then(response => {
+    void client.current.request('load', generation => ({ type: 'load', generation, base, packId, digest, trust })).then(response => {
       if (!alive || !response) return;
       if (response.type === 'loaded') {
         const scenario = response.release.scenarios.find(s => s.id === scenarioId);
@@ -73,7 +73,7 @@ export function Explorer({ packId, scenarioId, current, releases, trust }: { pac
       } else if (response.type === 'error') setError('This release could not be verified, so it was not loaded. (' + response.code + ')');
     });
     return () => { alive = false; };
-  }, [digest, packId, scenarioId, trust, engineMode]);
+  }, [digest, packId, scenarioId, trust, engineMode, base]);
 
   const release = loaded?.release ?? null;
   const scenario = useMemo(() => release?.scenarios.find(s => s.id === scenarioId) ?? null, [release, scenarioId]);

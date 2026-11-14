@@ -1,5 +1,5 @@
 import { parseRunExport, verifyRunExport } from '../../../../../../../packages/simulation/src/pack-analysis.ts';
-import { readIndex, readRelease } from '../../../../lib/server/releases.ts';
+import { loadPack } from '../../../../lib/server/releases.ts';
 import { recordVerification } from '../../../../lib/server/verification.ts';
 import { logEvent, requestId } from '../../../../lib/server/telemetry.ts';
 
@@ -15,11 +15,11 @@ export async function POST(request: Request) {
   const text = (await request.text()).slice(0, 200001);
   let claim;
   try { claim = parseRunExport(text); } catch { return Response.json({ valid: false, reason: 'INVALID_EXPORT' }, { status: 400, headers: { 'Cache-Control': 'no-store' } }); }
-  const entry = readIndex(claim.packId)?.releases.find(r => r.manifestDigest === claim.manifestDigest);
-  if (!entry) return Response.json({ valid: false, reason: 'RELEASE_UNKNOWN' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+  const pack = await loadPack(claim.packId, claim.manifestDigest).catch(() => null);
+  const entry = pack?.catalog.releases.find(r => r.manifestDigest === claim.manifestDigest);
+  if (!pack || !entry || pack.manifestDigest !== claim.manifestDigest) return Response.json({ valid: false, reason: 'RELEASE_UNKNOWN' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
   if (entry.status === 'withdrawn') return Response.json({ valid: false, reason: 'RELEASE_WITHDRAWN' }, { status: 410, headers: { 'Cache-Control': 'no-store' } });
-  const data = readRelease(claim.packId, claim.manifestDigest)!;
-  const outcome = await verifyRunExport(data.release, claim.manifestDigest, claim);
+  const outcome = await verifyRunExport(pack.release, claim.manifestDigest, claim);
   const record = outcome.valid ? await recordVerification(claim) : null;
   logEvent('run.verify', { requestId: id, packId: claim.packId, releaseId: claim.releaseId, valid: outcome.valid, reason: outcome.reason });
   return Response.json({ valid: outcome.valid, reason: outcome.reason, ...(record ? { record } : {}) }, { headers: { 'Cache-Control': 'no-store', 'X-Request-Id': id } });

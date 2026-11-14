@@ -6,7 +6,7 @@ import type { StressResult } from '../../../../packages/simulation/src/pack-anal
 import { MAX_STRESS_SAMPLES } from '../../../../packages/simulation/src/pack-analysis.ts';
 import { PackEngineClient } from '../lib/pack-client.ts';
 
-export function StressView({ packId, digest, trust, scenarios }: { packId: string; digest: string; trust: TrustStore; scenarios: readonly { id: string; title: string }[] }) {
+export function StressView({ packId, digest, trust, scenarios, base = '/releases' }: { packId: string; digest: string; trust: TrustStore; scenarios: readonly { id: string; title: string }[]; base?: string }) {
   const search = useSearchParams();
   const client = useRef<PackEngineClient | null>(null);
   const [release, setRelease] = useState<PackRelease | null>(null);
@@ -19,12 +19,12 @@ export function StressView({ packId, digest, trust, scenarios }: { packId: strin
   useEffect(() => {
     const engine = new PackEngineClient();
     client.current = engine;
-    void engine.request('load', generation => ({ type: 'load', generation, base: '/releases', packId, digest, trust })).then(r => {
+    void engine.request('load', generation => ({ type: 'load', generation, base, packId, digest, trust })).then(r => {
       if (r?.type === 'loaded') { setRelease(r.release); setFrameworkId((r.release.frameworks.find(f => f.role === 'proposal') ?? r.release.frameworks[0]!).id); setStatus(''); }
       else if (r?.type === 'error') setStatus('Release could not be verified: ' + r.code);
     });
     return () => engine.dispose();
-  }, [packId, digest, trust]);
+  }, [packId, digest, trust, base]);
   useEffect(() => {
     const w = release?.scenarios.find(s => s.id === scenarioId)?.workload;
     if (w) setForm(f => ({ ...f, arrivalsPerDay: w.arrivalsPerDay, workers: w.workers, unitsPerWorkerDay: w.unitsPerWorkerDay }));

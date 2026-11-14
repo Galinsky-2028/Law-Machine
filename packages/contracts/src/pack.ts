@@ -31,6 +31,8 @@ export type PackSourceMeta = {
   readonly retrievedAt: string | null;
   readonly rights: string;
   readonly officialUrl?: string;
+  /** Authoring only: private stored source object. Never copied into a release. */
+  readonly objectId?: string;
 };
 export type PackActor = {
   readonly id: string; readonly name: string;
