@@ -12,3 +12,4 @@ export * from './amendments.ts';
 export * from './version-diff.ts';
 export * from './pack-readiness.ts';
 export * from './source-intake.ts';
+export * from './pack-builder.ts';
