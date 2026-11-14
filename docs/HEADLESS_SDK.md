@@ -1,13 +1,38 @@
-# Headless public SDK boundary (LM-006)
+# Headless SDK (LM-006, LM-059)
 
-The public SDK exports only \`packages/sdk/src/index.ts\`. It imports pure contract and integrity modules. It does **not** import React, Next.js, a database client, a model provider, browser UI state, or private authoring services.
+`packages/sdk` is a framework-free TypeScript library. It imports no React, Next.js, database client or provider SDK. It lets another application load a signed, published pack release, verify it and run scenarios exactly as the public explorer does. Ask Bill or any other consumer uses this boundary; it never reaches into the web app.
 
-\`loadPublicRelease\` consumes caller-supplied data: a parsed model bundle, a specific release ID, a release manifest, the independently trusted SHA-256 digest of that manifest, exact original source bytes, and all declared public assets. It performs strict schema and engine-version negotiation, LM-003 model validation, LM-004 content verification, and release/manifest consistency checks. The resulting frozen session resolves provisions only in the release's pinned bill version and refuses ambiguous displayed citations.
+```ts
+import { fetchPackRelease } from '@law-machine/sdk';
+// Pin the trust store you obtained out of band (the site also serves /releases/trust.json).
+const session = await fetchPackRelease(base + '/releases', 'meridian-claims', manifestDigest, { trust, requireSignature: true });
+const { run, prepared } = session.runScenario('wrong-agency', { frameworkId: 'proposal', params: { 'transfer-delay': 4 } });
+session.resolveCitation(anchor);                       // exact provision text in the pinned version
+session.getTraceExplanation(run, run.events.at(-1).id); // why an event happened
+await session.compare('wrong-agency');                 // baseline vs proposal
+await session.stress('wrong-agency', request);         // bounded seeded sensitivity runs
+session.getSceneFocusTarget({ kind: 'actor', id: 'claimant' }, run);
+session.search('transfer');
+await session.exportRun(prepared, run);                // reproducible export; the server can verify it
+```
 
-The exported current engine version is **0.0.0**, indicating that no simulation engine exists yet. Incompatible requested versions fail with \`INCOMPATIBLE_ENGINE\`; unknown model versions fail with \`INCOMPATIBLE_SCHEMA\`. \`simulate\` always returns \`UNSUPPORTED_FEATURE\` until the validated rule interpreter and scheduler milestones land. Nothing in this SDK creates a government filing, receipt, deadline or legal conclusion.
+## Guarantees
 
-SDK methods return a discriminated \`SdkResult<T>\`: \`{ok:true,value}\` or \`{ok:false,error:{code,message}}\`. Errors distinguish schema/engine incompatibility, model/manifest integrity, missing releases, missing or ambiguous provisions, and future unsupported operations. Every source byte and public asset must be provided; no network or provider credentials are accessed by the SDK.
+- **Integrity.** `fetchPackRelease` hashes every file against the manifest, and the canonical manifest against the digest you pinned.
+- **Signatures.** With `requireSignature: true`, an unsigned release, or one signed by an unknown, retired-for-signing or revoked key, fails with `SIGNATURE_REQUIRED` or `INTEGRITY_FAILED`.
+- **Compatibility.** Engine and schema versions are negotiated (`INCOMPATIBLE_ENGINE`, `INCOMPATIBLE_SCHEMA`).
+- **Determinism.** Runs are deterministic. `run.runId` and `traceDigest` match the browser and the server verifier, so `POST /api/v1/runs/verify` can recompute any exported run.
+- **No legal effect.** Nothing creates a filing, receipt, personal deadline or legal conclusion. Fictional packs are labelled `fictional: true`.
 
-Run \`pnpm smoke:sdk\` from a clean checkout after \`pnpm install --frozen-lockfile\`. It loads an invented electronic-filing toy law, verifies the original bytes against a trusted manifest digest, resolves a version-scoped provision, and confirms simulation remains unsupported. It is included in \`pnpm check\` and requires no database, secrets, network, public deploy or browser.
+The original LM-006 `loadPublicRelease` (planning-model loader) remains exported for compatibility.
 
-The caller is responsible for independently establishing trusted manifest digest/publisher provenance and maintaining source privacy prior to intentional public release. Passing this SDK validation proves only internal integrity against that root and current schema, not legal accuracy or official government authorization.
+## Proof
+
+`pnpm smoke:sdk` (part of `pnpm check`) acts as an external consumer. Against the generated public tree it:
+
+- fetches each committed pack,
+- requires a signature,
+- runs every scenario,
+- resolves pinned citations,
+- requests focus targets,
+- searches.

@@ -1,32 +1,46 @@
-# Implementation handoff — 2026-10-17 checkpoint
+# Implementation handoff — 2026-11-14 checkpoint
 
-The authoritative source of unit scope and dependencies is [registry/prs.json](../registry/prs.json) and [docs/DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md). This dated checkpoint is NOT a live GitHub status feed. Inspect actual branch, pull request, current-head checks and merge state before work.
+[registry/prs.json](../registry/prs.json) holds unit scope and PR mappings. This dated checkpoint is not a live GitHub status feed, so check the live PRs and checks before acting.
 
-## Completed through this checkpoint
+## State
 
-**LM-001 through LM-029 are merged except LM-018**: the actual sequential merged units are LM-001–LM-017 and LM-019–LM-029, plus LM-042. This totals **29 of 60 units**, not 29 consecutive units. The 29th merged milestone was LM-042 PR #35 (PostgreSQL persistence) after three required CI jobs passed.
+All 60 units' functionality is integrated on `main` through the `lm-complete-integration` PR, except the real-bill content gated by LM-018 (below). The owner directed that units could be combined as long as every functionality was integrated. Per-unit evidence is in `docs/evidence/LM-0XX.md`.
 
-- LM-001–008: architecture/registry, workspace, schemas, canonical bytes/hash, accessible design, headless SDK, coverage capability declarations, fictional test oracle.
-- LM-009–017: document imports, source adapters, citations, baseline/temporal and amendatory projections, invalidation, assumptions/evidence.
-- LM-019–029: rule language/compiler, deterministic scheduler, actor state, deadlines, obligations/remedies, queues, replay/run identity, framework comparison, explanations and real browser worker with safe cancellation.
-- LM-042: PostgreSQL migrations for scoped editorial records, immutable revision/audit history, source/release/job metadata, forced RLS, optimistic revision conflicts, real ephemeral PostgreSQL tests and fixture-mode adapter. No production DB has been provisioned or migrated.
+**Runtime and content**
+- **Pack runtime (LM-030 engine, LM-055, LM-057, LM-058).**
+  - `packages/contracts/src/pack.ts` defines the format.
+  - The builder validates exact quotes, coverage and real/fictional labelling, then produces content-addressed, ECDSA-signed releases.
+  - The deterministic day-tick interpreter supports duties versus behaviour, three-valued unknowns, breaches, period ends, anchored schedules, effective dates, transfers with conservation and exceptions.
+  - Analysis covers comparison, explanation, bounded sandbox parameters, exports verified by recomputation, seeded stress tests and golden checks.
+- **Content.** Three fictional packs (119 golden checks) prove domain reuse. The **electronic-filing pack (LM-018/LM-030 content) remains blocked**: no authentic complete bill text or dated official baseline has been supplied. It is listed as unavailable and nothing was reconstructed.
 
-Verify [LM-026 PR #31](https://github.com/neophilism/Law-Machine/pull/31), [LM-027 PR #32](https://github.com/neophilism/Law-Machine/pull/32), [LM-028 PR #33](https://github.com/neophilism/Law-Machine/pull/33), [LM-029 PR #34](https://github.com/neophilism/Law-Machine/pull/34) and [LM-042 PR #35](https://github.com/neophilism/Law-Machine/pull/35).
+**Public site and integration**
+- **Public explorer (LM-031–LM-041).** The catalog, systems map, timeline playback, inspector, comparison, controls and sandbox, stress view, accessible sequence and mobile layout, share links and exports, search and glossary, and the static export. Axe-clean under CSP.
+- **SDK (LM-059).** `fetchPackRelease` with required signatures; `pnpm smoke:sdk` proves an external consumer.
 
-## In-progress units not accepted
+**Authoring and operations**
+- **Authoring (LM-043–LM-051).**
+  - Sign-in and identity: passkeys and invitations, roles, reauthentication, revocation.
+  - Sources and editing: encrypted source storage and import with change impact, and a workbench with revision guards.
+  - Jobs and publication: fenced-lease jobs, validation into staged releases, private preview, atomic signed publication, withdrawal and rollback.
+  - Optional AI candidates (heuristic or Claude) behind a kill switch, and official refresh.
+  - Server verification and saved scenarios; the OpenAPI document.
+- **Operations (LM-052–LM-054, LM-056, LM-060).** Redacted telemetry and diagnostics, encrypted backup and verified restore, migrations with a down chain and drift detection, security hardening, and the runbook in [OPERATIONS.md](OPERATIONS.md).
 
-- **LM-043 author identity**, draft [PR #36](https://github.com/neophilism/Law-Machine/pull/36), contains server-only permission checks, fresh membership/role scope tests, CSRF/reauth tests and a deliberately disabled author preview route. Complete managed identity-provider integration, real revocable sessions, role persistence and authenticated author-route E2E verification before considering acceptance.
-- **LM-018 first electronic-filing content pack**, draft [PR #37](https://github.com/neophilism/Law-Machine/pull/37), contains the 14 approved scenarios as a nonpublishable planning inventory and fail-closed source readiness checks. The authentic complete bill text and official dated baseline source bytes are NOT present; do not reconstruct legislation or publish this pack. Its research links are candidates, not independently pinned baseline snapshots.
-- LM-030's full first-pack simulation needs LM-018, so cannot be accepted while LM-018 lacks verified sources. LM-043 is a prerequisite for LM-044–046 authoring/upload work.
+## Deployment
 
-## Next development actions
+- **Render:** web service `law-machine` in the Galinsky 2028 workspace.
+- **Neon:** project "Law Machine" (`green-mouse-23144080`) in the campaign organization.
 
-Finish source-authenticated LM-018 and retained golden scenarios once the complete bill text and dated official baseline versions are supplied, and finish LM-043 using a maintained managed identity provider (candidate: Neon's managed authentication), with immutable source/version and cross-organization authorization checks. Keep public preview and toy-law worker usable without paid credentials. Other backend work may be prepared separately but cannot be merged as complete until its actual dependency gates pass.
+See OPERATIONS.md for variables, verification, rollback and backups. Secrets live only in the Render environment.
 
-## Verification / merge
+## Known limits
 
-Start from a clean checkout on Node 24.19.0, pnpm 11.25.0. Run pnpm install --frozen-lockfile, pnpm check, pnpm audit, pnpm build, then pnpm exec playwright install --with-deps chromium and pnpm test:browser. The current CI includes foundation, workspace and postgres jobs; require all applicable checks at exact PR head. A passing docs-only check cannot certify an unimplemented feature. Use docs/GITHUB_MERGE_PREFLIGHT.md and expected-head SHA merges; fix real failures before merging.
+- Performance: the phone "compare" interaction measured 215 ms against a 200 ms target (`docs/evidence/performance-web.json`). Engine: 22k events in about 1.0 s.
+- Free hosting tiers cold-start. The rate limiter is per instance.
+- **No independent human security audit or penetration test has been performed.** All review was AI-performed (see `security/THREAT_MODEL.md`).
 
-The public service remains a development experience; it does not receive actual legal filings, issue government receipts, calculate authoritative personal deadlines, or assert the proposal is enacted. Ask Bill is a separate character/conversation project consuming the headless SDK in the future; do not conflate repositories or companies.
+## Next actions
 
-Security testing and AI review do not constitute independent human certification. No external human audit is required for safe continued software development; unresolved actual vulnerabilities remain blockers to their affected release.
+1. Supply the authentic electronic-filing bill and dated official baseline. Then author the pack through `/author` or `content/packs/`, attach golden scenarios, and publish.
+2. Optionally commission an independent human review.
