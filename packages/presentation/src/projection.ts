@@ -59,7 +59,8 @@ export function playbackState(release: PackRelease, run: PackRun, step: number):
   });
   const edges = scene.edges.map(e => ({ id: e.id, from: e.from, to: e.to, kind: e.kind, label: e.label,
     active: !!current && e.eventKinds.includes(current.kind) && (e.from === current.actorId || e.to === current.actorId || current.category === 'external'), travelled: travelled.has(e.id) }));
-  const announcement = current ? current.date + ': ' + current.label + (current.outcome === 'breached' ? ' — duty breached.' : current.outcome === 'unknown' ? ' — unresolved.' : current.category === 'not-effective' ? ' — not yet in effect.' : '.') : 'Before the scenario starts.';
+  const base = current ? current.date + ': ' + current.label.replace(/[.\s]+$/, '') : '';
+  const announcement = current ? base + (current.outcome === 'breached' ? ' — duty breached.' : current.outcome === 'unknown' ? ' — unresolved.' : current.category === 'not-effective' ? ' — not yet in effect.' : '.') : 'Before the scenario starts.';
   return { step: at, total, event: current, date: current?.date ?? null, day: current?.day ?? 0, nodes, edges, duties, objectAt, announcement };
 }
 

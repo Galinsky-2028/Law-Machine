@@ -107,6 +107,13 @@ describe('legal semantics', () => {
       expect(point.eventTick).toBe(start);
     }
   });
+  it('accepts "no reading chosen" as a valid setting that keeps the conflict unresolved', () => {
+    const p = prepareScenario(release, 'missing-amount', { reading: null });
+    expect(p.issues).toEqual([]);
+    expect(runPackScenario(p.release, 'proposal', p.scenario).state).toBe('unresolved');
+    const back = prepareScenario(release, 'late-deficiency-notice', { reading: null });
+    expect(back.scenario.interpretationChoices).toEqual({});
+  });
   it('applies staged effective dates', () => {
     const run = runPackScenario(release, 'proposal', scenario('phased-implementation'));
     expect(run.events.filter(e => e.category === 'not-effective').map(e => e.kind)).toContain('act-missing-amount-notice');

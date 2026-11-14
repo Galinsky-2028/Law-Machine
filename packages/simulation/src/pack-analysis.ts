@@ -57,7 +57,7 @@ export function prepareScenario(release: PackRelease, scenarioId: string, input:
       if (typeof value !== 'boolean') { issues.push({ parameterId: key, message: p.label + ' must be yes or no.' }); continue; }
     } else if (p.control === 'tristate') {
       if (value !== null && typeof value !== 'boolean') { issues.push({ parameterId: key, message: p.label + ' must be yes, no or unknown.' }); continue; }
-    } else if (typeof value !== 'string' || !p.options!.some(o => o.value === value)) { issues.push({ parameterId: key, message: p.label + ' must be one of the listed options.' }); continue; }
+    } else if (!(value === null && t.kind === 'interpretation') && (typeof value !== 'string' || !p.options!.some(o => o.value === value))) { issues.push({ parameterId: key, message: p.label + ' must be one of the listed options.' }); continue; }
     values[key] = value;
     if (value !== defaults[key]) labels.push(p.label);
     if (t.kind === 'fact') {
@@ -69,7 +69,10 @@ export function prepareScenario(release: PackRelease, scenarioId: string, input:
     } else if (t.kind === 'behavior-mode') {
       const b = behaviors.find(x => x.action === t.action)!;
       behaviors[behaviors.indexOf(b)] = { ...b, mode: value === 'never' ? 'never' : 'perform-after', delay: b.delay ?? { amount: 0, unit: 'business-day' } };
-    } else if (t.kind === 'interpretation') choices[t.interpretationId] = value as string;
+    } else if (t.kind === 'interpretation') {
+      // null keeps the conflict visibly unresolved instead of choosing a reading.
+      if (value === null) delete choices[t.interpretationId]; else choices[t.interpretationId] = value as string;
+    }
     else offset = value as number;
   }
   let modifiedRelease = release;
