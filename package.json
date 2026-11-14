@@ -28,7 +28,12 @@
     "packs:check": "node --import tsx scripts/packs.ts check",
     "packs:build": "node --import tsx scripts/packs.ts build",
     "packs:sign": "node --import tsx scripts/packs.ts sign",
-    "packs:public": "node --import tsx scripts/packs.ts public"
+    "packs:public": "node --import tsx scripts/packs.ts public",
+    "export:static": "node scripts/export-static.mjs",
+    "db:migrate": "node --import tsx scripts/db-migrate.ts",
+    "db:backup": "node --import tsx scripts/backup.ts backup",
+    "db:restore": "node --import tsx scripts/backup.ts restore",
+    "perf": "node --import tsx scripts/perf.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",

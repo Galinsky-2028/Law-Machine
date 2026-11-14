@@ -2,6 +2,7 @@ import { parseRunExport, verifyRunExport } from '../../../../../../../packages/s
 import { loadPack } from '../../../../lib/server/releases.ts';
 import { recordVerification } from '../../../../lib/server/verification.ts';
 import { logEvent, requestId } from '../../../../lib/server/telemetry.ts';
+import { readText } from '../../../../lib/server/body.ts';
 
 /**
  * LM-051 bounded server replay. The server never trusts a client outcome: it
@@ -12,7 +13,8 @@ export async function POST(request: Request) {
   const id = requestId(request);
   const length = Number(request.headers.get('content-length') ?? '0');
   if (length > 200000) return Response.json({ valid: false, reason: 'INVALID_EXPORT' }, { status: 413 });
-  const text = (await request.text()).slice(0, 200001);
+  let text: string;
+  try { text = await readText(request, 200000); } catch { return Response.json({ valid: false, reason: 'INVALID_EXPORT' }, { status: 413 }); }
   let claim;
   try { claim = parseRunExport(text); } catch { return Response.json({ valid: false, reason: 'INVALID_EXPORT' }, { status: 400, headers: { 'Cache-Control': 'no-store' } }); }
   const pack = await loadPack(claim.packId, claim.manifestDigest).catch(() => null);

@@ -6,6 +6,7 @@ import {
 } from '../../../../../lib/server/authoring.ts';
 import { diagnostics } from '../../../../../lib/server/diagnostics.ts';
 import { logEvent, requestId } from '../../../../../lib/server/telemetry.ts';
+import { BodyTooLarge, readForm, readText } from '../../../../../lib/server/body.ts';
 
 /**
  * LM-050 authoring API. Every route names its required action; authorization
@@ -15,8 +16,8 @@ import { logEvent, requestId } from '../../../../../lib/server/telemetry.ts';
 type Handler = (ctx: AuthorContext, request: Request, params: string[]) => Promise<unknown>;
 type Route = { method: 'GET' | 'POST' | 'PUT'; pattern: RegExp; action: AuthorAction; admin?: boolean; handler: Handler };
 const json = async (request: Request, max = 2_000_000): Promise<Record<string, unknown>> => {
-  const text = await request.text();
-  if (text.length > max) throw new AuthoringError(413, 'REQUEST_TOO_LARGE');
+  let text: string;
+  try { text = await readText(request, max); } catch (e) { if (e instanceof BodyTooLarge) throw new AuthoringError(413, 'REQUEST_TOO_LARGE'); throw e; }
   try { const v = JSON.parse(text); if (!v || typeof v !== 'object' || Array.isArray(v)) throw Error(); return v; } catch { throw new AuthoringError(400, 'REQUEST_INVALID'); }
 };
 const ROLES: AuthorRole[] = ['contributor', 'editor', 'publisher'];
@@ -34,8 +35,7 @@ const routes: Route[] = [
   { method: 'GET', pattern: /^packs\/([0-9a-f-]{36})\/candidates$/, action: 'view', handler: (ctx, _r, [doc]) => listCandidates(ctx, doc!) },
   { method: 'POST', pattern: /^packs\/([0-9a-f-]{36})\/candidates\/([0-9a-f-]{36})$/, action: 'edit', handler: async (ctx, r, [doc, id]) => decideCandidate(ctx, doc!, id!, String((await json(r, 2000)).disposition) as 'accepted') },
   { method: 'POST', pattern: /^imports$/, action: 'edit', handler: async (ctx, r) => {
-    if (Number(r.headers.get('content-length') ?? '0') > MAX_SOURCE_BYTES + 100000) throw new AuthoringError(413, 'SOURCE_SIZE_INVALID');
-    const form = await r.formData().catch(() => { throw new AuthoringError(400, 'MULTIPART_REQUIRED'); });
+    const form = await readForm(r, MAX_SOURCE_BYTES + 100000).catch(e => { throw e instanceof BodyTooLarge ? new AuthoringError(413, 'SOURCE_SIZE_INVALID') : new AuthoringError(400, 'MULTIPART_REQUIRED'); });
     const file = form.get('file');
     if (!(file instanceof File)) throw new AuthoringError(400, 'FILE_REQUIRED');
     const format = file.name.endsWith('.md') ? 'markdown' : file.name.endsWith('.txt') ? 'text' : null;

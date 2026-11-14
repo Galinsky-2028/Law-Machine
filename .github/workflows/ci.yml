@@ -73,15 +73,70 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y postgresql-client
-      - name: Apply migration atomically
-        run: psql -v ON_ERROR_STOP=1 --single-transaction -f db/migrations/0001_up.sql -f db/migrations/0002_up.sql -f db/migrations/0003_up.sql -f db/migrations/0004_up.sql
-      - name: Verify tenant isolation, revision conflicts, atomic writes and recovery
+      - name: Apply migrations atomically
+        run: psql -v ON_ERROR_STOP=1 --single-transaction $(for f in db/migrations/0*_up.sql; do echo -f "$f"; done)
+      - name: Verify tenant isolation, roles, revision conflicts, atomic writes and recovery
         run: |
-          psql -v ON_ERROR_STOP=1 -f tests/postgres/persistence.sql
-          psql -v ON_ERROR_STOP=1 -f tests/postgres/author_security.sql
-          psql -v ON_ERROR_STOP=1 -f tests/postgres/revocation_guard.sql
-          psql -v ON_ERROR_STOP=1 -f tests/postgres/job_leases.sql
-      - name: Verify down migration in ephemeral database
+          for t in persistence author_security revocation_guard job_leases oidc_pending authoring_roles; do
+            psql -v ON_ERROR_STOP=1 -f tests/postgres/$t.sql
+          done
+      - name: Verify down migrations in ephemeral database
         run: |
-          psql -v ON_ERROR_STOP=1 --single-transaction -f db/migrations/0004_down.sql -f db/migrations/0003_down.sql -f db/migrations/0002_down.sql -f db/migrations/0001_down.sql
-          test "$(psql -At -c "SELECT to_regclass('public.lm_documents') IS NULL AND to_regclass('public.lm_author_sessions') IS NULL")" = "t"
+          psql -v ON_ERROR_STOP=1 --single-transaction $(for f in $(ls db/migrations/0*_down.sql | sort -r); do echo -f "$f"; done)
+          test "$(psql -At -c "SELECT to_regclass('public.lm_documents') IS NULL AND to_regclass('public.lm_author_sessions') IS NULL AND to_regclass('public.lm_packs') IS NULL")" = "t"
+
+  authoring:
+    name: authoring
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: fixture_only_password
+          POSTGRES_DB: law_machine_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d law_machine_e2e"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      LM_E2E_INVITE: ci-bootstrap-code-0123456789abcdef
+      LM_E2E_BASE_URL: http://localhost:3000
+      LM_E2E_ORIGIN: http://localhost:3000
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - name: Migrate a fresh database with least-privilege roles and a bootstrap invitation
+        run: |
+          export LM_BOOTSTRAP_INVITE_DIGEST=$(printf %s "$LM_E2E_INVITE" | sha256sum | cut -d' ' -f1)
+          MIGRATION_DATABASE_URL=postgres://postgres:fixture_only_password@127.0.0.1:5432/law_machine_e2e \
+          LM_APP_DB_PASSWORD=ciAppPassword_0123456789abcdef LM_AUTH_DB_PASSWORD=ciAuthPassword_0123456789abcde \
+          node --import tsx scripts/db-migrate.ts
+      - run: pnpm build
+      - name: Start the production server with the database configured
+        run: |
+          export DATABASE_URL=postgres://lm_app_login:ciAppPassword_0123456789abcdef@127.0.0.1:5432/law_machine_e2e
+          export AUTH_DATABASE_URL=postgres://lm_auth_login:ciAuthPassword_0123456789abcde@127.0.0.1:5432/law_machine_e2e
+          export LM_ORIGIN=http://localhost:3000 LM_AI_ENABLED=1 LM_AI_PROVIDER=heuristic LM_AUTH_MODE=passkey
+          export LM_SOURCE_KEY=$(openssl rand -base64 32)
+          (cd apps/web && nohup pnpm exec next start -p 3000 -H localhost > ../../server.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/api/health && break; sleep 2; done
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright test tests/browser/authoring.spec.ts --trace off
+      - name: Back up, restore into an isolated database, re-hash assets and replay releases
+        run: |
+          export LM_BACKUP_KEY=$(openssl rand -base64 32)
+          BACKUP_DATABASE_URL=postgres://postgres:fixture_only_password@127.0.0.1:5432/law_machine_e2e node --import tsx scripts/backup.ts backup backups
+          PGPASSWORD=fixture_only_password psql -h 127.0.0.1 -U postgres -d law_machine_e2e -c "CREATE DATABASE law_machine_restore"
+          RESTORE_DATABASE_URL=postgres://postgres:fixture_only_password@127.0.0.1:5432/law_machine_restore node --import tsx scripts/backup.ts restore $(ls backups/*.lmb | head -1)
+      - if: failure()
+        run: tail -100 server.log
