@@ -1,0 +1,21 @@
+{
+ "measuredAt": "2026-11-14T23:42:09.441Z",
+ "environment": {
+  "node": "v24.22.1",
+  "platform": "linux-x64",
+  "note": "Cloud container, single core share; not a user device."
+ },
+ "referenceRun": {
+  "events": 22016,
+  "state": "resolved",
+  "medianMs": 1025,
+  "target": "<= 1000 ms for 10,000 events (desktop profile)"
+ },
+ "typicalScenario": {
+  "events": 13,
+  "medianMs": 0.2
+ },
+ "comparisonMs": 1.9,
+ "stress400SamplesMs": 256,
+ "releaseUncompressedBytes": 90149
+}

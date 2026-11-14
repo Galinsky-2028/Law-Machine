@@ -1,0 +1,181 @@
+openapi: 3.1.0
+info:
+  title: Law Machine API
+  version: 1.0.0
+  description: |
+    Public read and verification endpoints plus the authenticated authoring API.
+    Public scenarios are hypothetical; nothing here accepts a legal filing, issues a
+    receipt, or calculates a person's real deadline. Proposals are never presented
+    as enacted law. Errors are `{ "code": "UPPER_SNAKE" }` with an HTTP status.
+    Author endpoints require the `__Host-lm_session` cookie from a passkey sign-in;
+    every non-GET author request must also send `Origin` equal to the site origin and
+    `x-law-machine-csrf` equal to the `__Host-lm_csrf` cookie. Publishing, member
+    management and invitations additionally need a passkey confirmation within 15 minutes.
+servers:
+  - url: /
+tags:
+  - name: public
+  - name: identity
+  - name: authoring
+components:
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: __Host-lm_session }
+    csrf: { type: apiKey, in: header, name: x-law-machine-csrf }
+  schemas:
+    Error: { type: object, required: [code], properties: { code: { type: string }, requestId: { type: string } } }
+    Digest: { type: string, pattern: '^[a-f0-9]{64}$' }
+    CatalogRelease:
+      type: object
+      properties:
+        releaseId: { type: string }
+        manifestDigest: { $ref: '#/components/schemas/Digest' }
+        label: { type: string }
+        publishedAt: { type: string, format: date }
+        status: { enum: [current, superseded, withdrawn] }
+        note: { type: [string, 'null'] }
+        signed: { type: boolean }
+    Catalog:
+      type: object
+      properties:
+        format: { const: law-machine-catalog-v1 }
+        packs:
+          type: array
+          items:
+            type: object
+            properties:
+              packId: { type: string }
+              title: { type: string }
+              fictional: { type: boolean }
+              statusLabel: { type: string }
+              current: { $ref: '#/components/schemas/Digest' }
+              releases: { type: array, items: { $ref: '#/components/schemas/CatalogRelease' } }
+        unavailable: { type: array, items: { type: object, properties: { packId: { type: string }, title: { type: string }, reason: { type: string } } } }
+    RunExport:
+      type: object
+      description: Produced by the explorer's "Download as JSON". Only allowlisted parameters; never free text.
+      required: [format, packId, releaseId, manifestDigest, frameworkId, scenarioId, parameters, runId, traceDigest, engineVersion, summary]
+      properties:
+        format: { const: law-machine-run-v1 }
+        packId: { type: string }
+        manifestDigest: { $ref: '#/components/schemas/Digest' }
+        frameworkId: { type: string }
+        scenarioId: { type: string }
+        parameters: { type: object, additionalProperties: { type: [boolean, number, string, 'null'] } }
+        runId: { $ref: '#/components/schemas/Digest' }
+        traceDigest: { $ref: '#/components/schemas/Digest' }
+    Job:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        kind: { enum: [source-import, release-validate, ai-extract, source-refresh] }
+        state: { enum: [queued, running, completed, failed, cancelled] }
+        attempts: { type: integer }
+        last_error_code: { type: [string, 'null'] }
+        result: { type: [object, 'null'] }
+paths:
+  /api/health:
+    get:
+      tags: [public]
+      summary: Liveness and dependency status (database and authoring reported separately)
+      responses: { '200': { description: OK }, '503': { description: No published releases available } }
+  /api/v1/catalog:
+    get:
+      tags: [public]
+      summary: Published packs (committed and authored), their releases and unavailable packs
+      responses: { '200': { description: Catalog, content: { application/json: { schema: { $ref: '#/components/schemas/Catalog' } } } } }
+  /api/v1/packs/{packId}/releases/{digest}:
+    get:
+      tags: [public]
+      summary: Immutable manifest of a committed release
+      parameters: [{ name: packId, in: path, required: true, schema: { type: string } }, { name: digest, in: path, required: true, schema: { $ref: '#/components/schemas/Digest' } }]
+      responses: { '200': { description: Manifest (cache immutable) }, '404': { description: Unknown }, '410': { description: Withdrawn } }
+  /releases/{packId}/{digest}/{file}:
+    get: { tags: [public], summary: 'Committed release files: manifest.json, signature.json, assets/<sha256>.<ext>', responses: { '200': { description: File } } }
+  /published/{packId}/{digest}/{file}:
+    get: { tags: [public], summary: Files of releases published through authoring (published status only), responses: { '200': { description: File }, '404': { description: Not published } } }
+  /api/v1/provisions/{versionId}/{provisionId}:
+    get: { tags: [public], summary: Exact provision text and citation from a current release, responses: { '200': { description: Provision }, '404': { description: Not found } } }
+  /api/v1/runs/verify:
+    post:
+      tags: [public]
+      summary: Server recomputation of an exported run (body <= 200 kB)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/RunExport' } } } }
+      responses:
+        '200': { description: '{ valid, reason, record? } — reason RECOMPUTED_MATCH, OUTCOME_MISMATCH, RUN_IDENTITY_MISMATCH, PARAMETERS_INVALID, ENGINE_VERSION_UNSUPPORTED' }
+        '400': { description: Not a run export }
+        '404': { description: Release unknown }
+        '410': { description: Release withdrawn }
+  /api/v1/scenarios:
+    post:
+      tags: [public]
+      summary: Opt-in server save of a scenario's allowlisted settings
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [packId, manifestDigest, scenarioId, frameworkId], properties: { packId: { type: string }, manifestDigest: { $ref: '#/components/schemas/Digest' }, scenarioId: { type: string }, frameworkId: { type: string }, parameters: { type: object }, retentionDays: { type: integer, minimum: 1, maximum: 365 } } }
+      responses: { '201': { description: '{ id, deleteToken, url, expiresAt } — keep deleteToken to delete' }, '400': { description: Invalid parameters }, '410': { description: Release withdrawn }, '503': { description: Saves unavailable (static mode) } }
+  /api/v1/scenarios/{id}:
+    get: { tags: [public], summary: Resolve a saved scenario, responses: { '200': { description: Saved settings and link }, '404': { description: Expired, deleted or unknown } } }
+    delete:
+      tags: [public]
+      summary: Delete with the x-delete-token header
+      parameters: [{ name: x-delete-token, in: header, required: true, schema: { type: string } }]
+      responses: { '200': { description: Deleted }, '404': { description: Unknown or wrong token } }
+  /api/author/passkey/register/options:
+    post: { tags: [identity], summary: 'Start enrollment: { invitationCode, displayName } or, when signed in, add a passkey', responses: { '200': { description: WebAuthn creation options }, '403': { description: INVITATION_INVALID } } }
+  /api/author/passkey/register/verify:
+    post: { tags: [identity], summary: Finish enrollment; consumes the invitation and issues a session, responses: { '200': { description: Signed in } } }
+  /api/author/passkey/login/options:
+    post: { tags: [identity], summary: Start sign-in or reauthentication, responses: { '200': { description: WebAuthn request options } } }
+  /api/author/passkey/login/verify:
+    post: { tags: [identity], summary: Finish sign-in; rotates the session and records reauthentication time, responses: { '200': { description: Signed in }, '401': { description: Invalid } } }
+  /api/author/logout:
+    post: { tags: [identity], security: [{ session: [], csrf: [] }], summary: Revoke the current session, responses: { '204': { description: Signed out } } }
+  /api/author/me:
+    get: { tags: [identity], security: [{ session: [] }], summary: Account, memberships, passkeys, AI availability, responses: { '200': { description: Account } } }
+  /api/v1/author/{org}/packs:
+    get: { tags: [authoring], security: [{ session: [] }], summary: List models (any member), responses: { '200': { description: Models } } }
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Create a model { packId, title }', responses: { '200': { description: '{ documentId, packId, revision }' }, '409': { description: PACK_ID_TAKEN } } }
+  /api/v1/author/{org}/packs/{documentId}:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Current revision, sources, jobs, validations, releases, pointer, history, responses: { '200': { description: Model } } }
+    put:
+      tags: [authoring]
+      security: [{ session: [], csrf: [] }]
+      summary: 'Save { expectedRevision, payload } — optimistic concurrency'
+      responses: { '200': { description: '{ revision }' }, '409': { description: STALE_REVISION } }
+  /api/v1/author/{org}/packs/{documentId}/validate:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: Enqueue an idempotent validation job for the current revision, responses: { '200': { description: '{ jobId, revision }' } } }
+  /api/v1/author/{org}/packs/{documentId}/preview/{digest}:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Private, uncached staged bundle, responses: { '200': { description: Release bundle } } }
+  /api/v1/author/{org}/packs/{documentId}/publish:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Publisher + recent reauth. { releaseId } of a staged build of the current revision', responses: { '200': { description: '{ manifestDigest, releaseId, signed }' }, '403': { description: REAUTH_REQUIRED or ORG_ACCESS_DENIED }, '409': { description: VALIDATION_STALE, VALIDATION_REQUIRED, RELEASE_LABEL_REUSED } } }
+  /api/v1/author/{org}/packs/{documentId}/withdraw:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Publisher. { releaseId, note }; pointer falls back to the newest remaining release', responses: { '200': { description: Withdrawn } } }
+  /api/v1/author/{org}/packs/{documentId}/pointer:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Publisher. Roll the public pointer back to { releaseId }', responses: { '200': { description: Restored } } }
+  /api/v1/author/{org}/imports:
+    post:
+      tags: [authoring]
+      security: [{ session: [], csrf: [] }]
+      summary: Upload a .md/.txt source (multipart documentId, file, officialUrl?) into encrypted private storage; parsing is a job
+      responses: { '200': { description: '{ sourceId, jobId, duplicate, digest }' }, '413': { description: Over 2 MB }, '415': { description: Not text or Markdown } }
+  /api/v1/author/{org}/sources/{sourceId}:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Parsed provision tree of a private source, responses: { '200': { description: Source } } }
+  /api/v1/author/{org}/sources/{sourceId}/refresh:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: Check the official URL for a changed version (never republishes), responses: { '200': { description: '{ jobId }' } } }
+  /api/v1/author/{org}/packs/{documentId}/ai:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Optional candidate extraction { sourceId } (kill switch; candidates only)', responses: { '200': { description: '{ jobId }' } } }
+  /api/v1/author/{org}/packs/{documentId}/candidates:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Candidate rules with provenance and disposition, responses: { '200': { description: Candidates } } }
+  /api/v1/author/{org}/packs/{documentId}/candidates/{id}:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: '{ disposition: accepted|rejected }', responses: { '200': { description: Decided } } }
+  /api/v1/author/{org}/jobs/{jobId}:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Job state, attempts, error code and result, responses: { '200': { description: Job, content: { application/json: { schema: { $ref: '#/components/schemas/Job' } } } } } }
+  /api/v1/author/{org}/members:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Members and roles, responses: { '200': { description: Members } } }
+  /api/v1/author/{org}/invitations:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: 'Publisher + recent reauth. { role } -> one-time code (7 days)', responses: { '200': { description: '{ code, expiresAt }' } } }
+  /api/v1/author/{org}/members/{actorId}/revoke:
+    post: { tags: [authoring], security: [{ session: [], csrf: [] }], summary: Publisher + recent reauth. Revokes membership and all of that author's sessions, responses: { '200': { description: '{ revoked }' } } }
+  /api/v1/author/{org}/diagnostics:
+    get: { tags: [authoring], security: [{ session: [] }], summary: Queue lag, failures by code, provider status (no content), responses: { '200': { description: Diagnostics } } }

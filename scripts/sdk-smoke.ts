@@ -37,10 +37,17 @@ const fileFetch = async (url: string) => {
   catch { return { ok: false, status: 404, arrayBuffer: async () => new ArrayBuffer(0) }; }
 };
 for (const entry of catalog.packs) {
-  const session = await fetchPackRelease('releases', entry.packId, entry.current, { fetch: fileFetch, trust });
+  // A separate consumer (e.g. a future Ask Bill client) insists on a trusted publisher signature.
+  const session = await fetchPackRelease('releases', entry.packId, entry.current, { fetch: fileFetch, trust, requireSignature: trust.keys.length > 0 });
   const first = session.release.scenarios[0]!;
   const { run } = session.runScenario(first.id);
-  const why = session.getTraceExplanation(run, run.events.find(e => e.basis === 'legal')!.id);
+  const legal = run.events.find(e => e.basis === 'legal')!;
+  const why = session.getTraceExplanation(run, legal.id);
   if (!why.excerpts.length || why.excerpts.some(x => x.stale)) throw new Error('Headless SDK could not resolve a pinned citation for ' + entry.packId);
+  const cited = session.resolveCitation(legal.sourceRefs[0]!);
+  if (cited.status !== 'resolved') throw new Error('Pinned anchor did not resolve for ' + entry.packId);
+  const focus = session.getSceneFocusTarget({ kind: 'actor', id: legal.actorId }, run);
+  if (!focus.found || !focus.eventIds.length) throw new Error('Semantic focus target missing for ' + entry.packId);
+  if (!session.search(session.release.glossary[0]?.term ?? session.release.title).length) throw new Error('Search returned nothing for ' + entry.packId);
   console.log('Headless SDK: ' + entry.packId + ' ' + entry.current.slice(0, 12) + ' verified (' + (session.signature.valid ? 'signed ' + session.signature.keyId : 'unsigned: ' + session.signature.reason) + '); ' + first.id + ' ran ' + run.events.length + ' events.');
 }
