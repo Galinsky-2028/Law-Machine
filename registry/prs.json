@@ -4,7 +4,7 @@
   "roadmapVersion": 1,
   "planVerified": true,
   "plannedPrCount": 60,
-  "observedAt": "2026-11-15T00:20:00Z",
+  "observedAt": "2026-11-15T18:49:39Z",
   "approval": {
     "basis": "Owner directed implementation of the supplied Law Machine plan in neophilism/Law-Machine on 2026-10-16.",
     "source": "docs/source/ORIGINAL_SPECIFICATION.md"
@@ -1147,7 +1147,10 @@
       "source": {
         "path": "docs/source/ORIGINAL_SPECIFICATION.md",
         "heading": "LM 055 Performance budgets and large model behavior"
-      }
+      },
+      "contributingPrs": [
+        61
+      ]
     },
     {
       "id": "LM-056",
@@ -1265,6 +1268,20 @@
     }
   ],
   "pullRequests": [
+    {
+      "id": 5325946757,
+      "number": 61,
+      "title": "LM-055: Prefetch the framework comparison so Compare responds immediately",
+      "state": "closed",
+      "url": "https://github.com/neophilism/Law-Machine/pull/61",
+      "createdAt": "2026-11-15T18:46:57Z",
+      "updatedAt": "2026-11-15T18:49:39Z",
+      "closedAt": "2026-11-15T18:49:39Z",
+      "mergedAt": "2026-11-15T18:49:39Z",
+      "draft": false,
+      "headSha": "8a9b24ac0415dd8fb3f1e8edec69d8e987f24de3",
+      "baseRef": "main"
+    },
     {
       "id": 5317532228,
       "number": 59,
