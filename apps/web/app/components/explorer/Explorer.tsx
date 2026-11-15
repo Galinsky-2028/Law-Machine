@@ -7,7 +7,7 @@ import { checkpointSteps, decodeShare, encodeShare, playbackState } from '../../
 import { defaultParameterValues, exportRun, prepareScenario, type PackComparison, type ParameterValue } from '../../../../../packages/simulation/src/pack-analysis.ts';
 import type { PackRun } from '../../../../../packages/simulation/src/pack-engine.ts';
 import { PackEngineClient } from '../../lib/pack-client.ts';
-import type { PreparedSummary } from '../../lib/pack-protocol.ts';
+import type { PackResponse, PreparedSummary } from '../../lib/pack-protocol.ts';
 import { ComparePanel } from './ComparePanel.tsx';
 import { Controls } from './Controls.tsx';
 import { Inspector } from './Inspector.tsx';
@@ -79,20 +79,40 @@ export function Explorer({ packId, scenarioId, current, releases, trust, base = 
   const scenario = useMemo(() => release?.scenarios.find(s => s.id === scenarioId) ?? null, [release, scenarioId]);
   const edits = useMemo(() => ({ disabledRules: disabled }), [disabled]);
 
+  // A comparison computed speculatively while the visitor views one framework, keyed by the exact
+  // release, scenario, inputs and sandbox edits it was computed from. Switching to "Compare both"
+  // with the same key uses it at once instead of waiting for the worker.
+  const prefetched = useRef<{ key: string; comparison: PackComparison; prepared: PreparedSummary } | null>(null);
+  const prefetching = useRef<{ key: string; result: Promise<PackResponse | null> } | null>(null);
+  const compareKey = useMemo(() => release && values ? JSON.stringify([loaded?.manifestDigest ?? '', scenarioId, values, edits]) : null, [release, loaded, scenarioId, values, edits]);
+
   // Execute whenever the framework, inputs or sandbox edits change.
   useEffect(() => {
     if (!release || !scenario || !values || !mode || !client.current) return;
     let alive = true;
-    setBusy(true); setPlaying(false);
+    setPlaying(false);
     const engine = client.current;
+    const inflight = prefetching.current;
+    if (!(mode === 'compare' && inflight && inflight.key === compareKey)) { engine.cancelKind('prefetch-compare'); prefetching.current = null; }
     const done = (summary: PreparedSummary) => { setPrepared(summary); setBusy(false); };
     if (mode === 'compare') {
-      void engine.request('compute', generation => ({ type: 'compare', generation, scenarioId, params: values, edits })).then(r => {
+      const cached = prefetched.current;
+      if (cached && cached.key === compareKey) {
+        engine.cancelKind('compute');
+        done(cached.prepared); setComparison(cached.comparison); setRun(null); setCompareSide(s => s ?? cached.comparison.proposal.frameworkId);
+        return () => { alive = false; };
+      }
+      setBusy(true);
+      // Reuse a background comparison of exactly these inputs that is still running.
+      const pending = inflight && inflight.key === compareKey ? inflight.result : null;
+      if (pending) engine.cancelKind('compute');
+      void (pending ?? engine.request('compute', generation => ({ type: 'compare', generation, scenarioId, params: values, edits }))).then(r => {
         if (!alive || !r) return;
         if (r.type === 'compare') { done(r.prepared); if (r.comparison) { setComparison(r.comparison); setRun(null); setCompareSide(s => s ?? r.comparison!.proposal.frameworkId); } }
         else if (r.type === 'error') { setError(r.message); setBusy(false); }
       });
     } else {
+      setBusy(true);
       void engine.request('compute', generation => ({ type: 'run', generation, scenarioId, frameworkId: mode, params: values, edits })).then(r => {
         if (!alive || !r) return;
         if (r.type === 'run') {
@@ -103,11 +123,22 @@ export function Explorer({ packId, scenarioId, current, releases, trust, base = 
             initialStep.current = null;
             setStep(s => Math.min(wanted ?? s, r.run!.events.length));
           }
+          // Once the visible run is ready, compute the comparison in the background so that
+          // "Compare both" responds immediately. It never replaces what is on screen.
+          const key = compareKey;
+          if (key && release.frameworks.length > 1 && prefetched.current?.key !== key) {
+            const result = engine.request('prefetch-compare', generation => ({ type: 'compare', generation, scenarioId, params: values, edits }));
+            prefetching.current = { key, result };
+            void result.then(p => {
+              if (prefetching.current?.result === result) prefetching.current = null;
+              if (p && p.type === 'compare' && p.comparison) prefetched.current = { key, comparison: p.comparison, prepared: p.prepared };
+            });
+          }
         } else if (r.type === 'error') { setError(r.message); setBusy(false); }
       });
     }
     return () => { alive = false; };
-  }, [release, scenario, values, mode, edits, scenarioId]);
+  }, [release, scenario, values, mode, edits, scenarioId, compareKey]);
 
   const activeRun = mode === 'compare' ? (comparison ? (compareSide === comparison.baseline.frameworkId ? comparison.baseline : comparison.proposal) : null) : run;
   const stops = useMemo(() => activeRun ? checkpointSteps(activeRun) : [], [activeRun]);
