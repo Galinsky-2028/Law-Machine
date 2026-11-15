@@ -1,9 +1,14 @@
 {
   "schema_version": 1,
-  "repository": "neophilism/Law-Machine",
-  "kind": "unclassified",
+  "repository": "Galinsky-2028/Law-Machine",
+  "kind": "web-service",
   "monitoring": {
-    "mode": "inventory"
+    "mode": "health",
+    "health_url": "https://law-machine.onrender.com/api/health",
+    "expect": {
+      "status": "ok",
+      "filingsAccepted": false
+    }
   },
   "budget": {
     "monthly_usd_max": 0,
@@ -11,9 +16,26 @@
   },
   "failover": {
     "mode": "disabled",
-    "stateful": false,
-    "writer_fencing": false,
+    "stateful": true,
+    "writer_fencing": true,
     "router": "none"
   },
-  "deployments": []
+  "deployments": [
+    {
+      "provider": "render",
+      "service_id": "srv-dbsf9qe7bikc73fec0b0",
+      "name": "law-machine",
+      "url": "https://law-machine.onrender.com",
+      "plan": "free",
+      "region": "ohio",
+      "branch": "main",
+      "auto_deploy": true,
+      "database": {
+        "provider": "neon",
+        "project_id": "green-mouse-23144080",
+        "branch_id": "br-withered-king-bdi1h1bm",
+        "plan": "free"
+      }
+    }
+  ]
 }

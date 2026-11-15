@@ -62,7 +62,7 @@ RESTORE_DATABASE_URL="$EMPTY_DATABASE_URL" LM_BACKUP_KEY=… pnpm db:restore ./b
 - Archives are gzip + AES-256-GCM. Each table carries a SHA-256, so corruption is refused.
 - Restore only targets an **empty** database. It then migrates, re-hashes every release asset against its manifest and replays every scenario against its golden expectations.
 - Evidence from CI and the local runs: restore verified 45/45 replays with consistent pointers.
-- **RPO**: the time since the last backup. A weekly scheduled backup plus Neon's point-in-time history (free tier: 24 hours) bounds data loss to 24 hours.
+- **RPO**: the time since the last backup. Neon's point-in-time history on this project is 6 hours (`history_retention_seconds` 21600), so take an encrypted backup with `pnpm db:backup` at least daily — and before every destructive migration — to bound loss beyond that window. No scheduled backup job is configured yet: it would need the owner connection string stored as a CI secret, which is the owner's decision.
 - **RTO**: about 5 minutes for a small database (restore and replay measured in seconds) plus the deploy time.
 - Signing keys are **not** in backups. Recover them from the secret store, or rotate (below).
 
