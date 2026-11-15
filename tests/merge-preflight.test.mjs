@@ -38,3 +38,15 @@ test('a mismatched PR head cannot cause a merge API write', async () => {
   assert.ok(result.blockers.includes('HEAD_SHA_MISMATCH'));
   assert.equal(writes, 0);
 });
+test('the merge write sends a JSON body with a JSON content type', async () => {
+  const e = evidence();
+  let put;
+  const request = async (url, options) => {
+    if (options.method === 'PUT') { put = options; return { ok: true, json: async () => ({ merged: true, sha: 'c'.repeat(40) }) }; }
+    const data = url.endsWith('/pulls/1') ? e.pr : url.includes('check-runs') ? e.checks : e.statuses;
+    return { ok: true, json: async () => data };
+  };
+  await safeMergePR({ repository: e.repository, number: 1, expectedSha: sha, requiredChecks: ['foundation'], token: 'synthetic-test-token', request });
+  assert.equal(put.headers['Content-Type'], 'application/json');
+  assert.deepEqual(JSON.parse(put.body), { sha, merge_method: 'squash' });
+});

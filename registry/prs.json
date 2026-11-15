@@ -4,7 +4,7 @@
   "roadmapVersion": 1,
   "planVerified": true,
   "plannedPrCount": 60,
-  "observedAt": "2026-11-14T23:55:00Z",
+  "observedAt": "2026-11-15T00:20:00Z",
   "approval": {
     "basis": "Owner directed implementation of the supplied Law Machine plan in neophilism/Law-Machine on 2026-10-16.",
     "source": "docs/source/ORIGINAL_SPECIFICATION.md"
@@ -1269,14 +1269,14 @@
       "id": 5317532228,
       "number": 59,
       "title": "LM-031: Complete integration of LM-030–LM-060 (public explorer, authoring, publication, operations)",
-      "state": "open",
+      "state": "closed",
       "url": "https://github.com/neophilism/Law-Machine/pull/59",
       "createdAt": "2026-11-14T23:49:20Z",
-      "updatedAt": "2026-11-14T23:49:20Z",
-      "closedAt": null,
-      "mergedAt": null,
+      "updatedAt": "2026-11-14T23:55:02Z",
+      "closedAt": "2026-11-14T23:55:01Z",
+      "mergedAt": "2026-11-14T23:55:01Z",
       "draft": false,
-      "headSha": "581d6b2895a9fbb3f45584974aa99baa85c9a575",
+      "headSha": "17c5d374be9951a3f10c1e10f30801957f09fa12",
       "baseRef": "main"
     },
     {

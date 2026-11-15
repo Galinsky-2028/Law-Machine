@@ -44,7 +44,7 @@ export async function verifyRemotePR({ repository, number, requiredChecks, expec
   const base = 'https://api.github.com/repos/' + repository;
   const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
   async function api(path, method = 'GET', data) {
-    const r = await request(base + path, {method, headers, redirect: 'error', ...(data ? {body:JSON.stringify(data)} : {})});
+    const r = await request(base + path, {method, headers: data ? {...headers, 'Content-Type': 'application/json'} : headers, redirect: 'error', ...(data ? {body:JSON.stringify(data)} : {})});
     if (!r.ok) throw Error('GitHub ' + method + ' ' + path.split('?')[0] + ' returned HTTP ' + r.status);
     return r.json();
   }
